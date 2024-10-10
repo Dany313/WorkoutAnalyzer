@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
 // Widget riutilizzabile per visualizzare una lista di ListTile
-class CustomListWidget extends StatefulWidget {
+class CustomList extends StatefulWidget {
   final List<String> items;
   final Function(String) onTap;
 
-  const CustomListWidget({
+  const CustomList({
     super.key,
     required this.items,
     required this.onTap,
   });
 
   @override
-  State<CustomListWidget> createState() => _CustomListWidgetState();
+  State<CustomList> createState() => _CustomListState();
 }
 
-class _CustomListWidgetState extends State<CustomListWidget> {
+class _CustomListState extends State<CustomList> {
   bool _isEditingNome = false;
   late int _idEditNome;
 

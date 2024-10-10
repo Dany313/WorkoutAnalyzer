@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:workout_analyzer/pages/esercizio_dettaglio_page.dart';
 
-import '../components/custom_list_widget.dart';
+import '../components/custom_list.dart';
 
 class EserciziPage extends StatefulWidget {
   final String selectedItem;
@@ -21,7 +21,7 @@ class _EserciziPageState extends State<EserciziPage> {
       appBar: AppBar(
         title: Text(widget.selectedItem),
       ),
-      body: CustomListWidget(items: _esercizi, onTap: (selectedItem) {
+      body: CustomList(items: _esercizi, onTap: (selectedItem) {
         // Naviga alla seconda pagina passando l'elemento selezionato
         Navigator.push(
           context,

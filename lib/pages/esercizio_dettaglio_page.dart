@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../components/allenamento_tile.dart';
 import '../entity/esercizio_dettaglio.dart';
 
 class EsercizioDettaglioPage extends StatefulWidget {
@@ -28,20 +29,85 @@ class _EsercizioDettaglioPageState extends State<EsercizioDettaglioPage> {
     ],
   };
 
+  // Controlla quali pannelli sono espansi
+  List<bool> _expandedPanels = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Inizializza la lista di pannelli espansi con tutti chiusi
+    _expandedPanels = List.generate(list.length, (_) => true);
+    print(_expandedPanels);
+  }
+
+  // Funzione per aggiungere un nuovo allenamento
+  void _aggiungiAllenamento(int chiave) {
+    setState(() {
+      list[chiave]?.add(
+        EsercizioDettaglio(
+            serie: list[chiave]!.length + 1, ripetizioni: 10, peso: 20),
+      );
+    });
+  }
+
+  // Funzione per aggiornare le ripetizioni
+  void _aggiornaRipetizioni(int chiave, int index, int nuoveRipetizioni) {
+    setState(() {
+      list[chiave]?.elementAt(index).ripetizioni = nuoveRipetizioni;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.scheda.toLowerCase()} > ${widget.esercizio}"),
+        title: Text('Esercizi'),
       ),
-      body: ListView.builder(
-    itemCount: list.keys.length, // Numero di elementi nella lista
-    itemBuilder: (context, index) {
-
-      return Text(list[index+1].toString());
-
-    }
-
+      body: ListView(
+        children: [
+          ExpansionPanelList(
+            expansionCallback: (int panelIndex, bool isExpanded) {
+              setState(() {
+                print(panelIndex);
+                print(isExpanded);
+                _expandedPanels[panelIndex] = isExpanded;
+                print(_expandedPanels);
+              });
+            },
+            children: list.entries.map<ExpansionPanel>((entry) {
+              print(entry);
+              int index = list.keys.toList().indexOf(entry.key); // Ottieni l'indice corretto
+              return ExpansionPanel(
+                headerBuilder: (BuildContext context, bool isExpanded) {
+                  return ListTile(
+                    title: Text('Allenamento ${entry.key}'),
+                  );
+                },
+                body: Column(
+                  children: [
+                    ...entry.value.asMap().entries.map((entryMap) {
+                      int esercizioIndex = entryMap.key;
+                      EsercizioDettaglio dettaglio = entryMap.value;
+                      return AllenamentoTile(esercizio: dettaglio,
+                        onUpdateReps: (int nuoveRipetizioni) {
+                          _aggiornaRipetizioni(entry.key, esercizioIndex, nuoveRipetizioni);
+                        },
+                        );
+                    }),
+                    IconButton(
+                      onPressed: () {
+                        _aggiungiAllenamento(entry.key);
+                        //_updateExpandedPanels(); // Assicurati di aggiornare la lista dei pannelli espansi
+                      },
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+                isExpanded: _expandedPanels[index],
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

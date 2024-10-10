@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:workout_analyzer/components/custom_list_widget.dart';
+import 'package:workout_analyzer/components/custom_list.dart';
 import 'esercizi_page.dart';
 
 
@@ -19,7 +19,7 @@ class _SchedePageState extends State<SchedePage> {
       appBar: AppBar(
         title: Text("Schede Allenamento"),
       ),
-      body: CustomListWidget(items: _schedeAllenamnto, onTap: (selectedItem) {
+      body: CustomList(items: _schedeAllenamnto, onTap: (selectedItem) {
         // Naviga alla seconda pagina passando l'elemento selezionato
         Navigator.push(
           context,

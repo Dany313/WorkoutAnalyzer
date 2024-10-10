@@ -1,29 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:workout_analyzer/entity/esercizio_dettaglio.dart';
 
-class AllenamentoTile extends StatefulWidget {
-  final EsercizioDettaglio esercizio;
+import '../model/workout_detail.dart';
+
+class WorkoutDetailComponent extends StatefulWidget {
+  final WorkoutDetail detail;
   final Function(int) onUpdateReps; // Callback per aggiornare le ripetizioni
 
-  const AllenamentoTile({
+  const WorkoutDetailComponent({
     super.key,
-    required this.esercizio, required this.onUpdateReps,
+    required this.onUpdateReps, required this.detail,
   });
 
   @override
-  State<AllenamentoTile> createState() => _AllenamentoTileState();
+  State<WorkoutDetailComponent> createState() => _WorkoutDetailComponentState();
 }
 
-class _AllenamentoTileState extends State<AllenamentoTile> {
+class _WorkoutDetailComponentState extends State<WorkoutDetailComponent> {
   bool _isEditingReps = false;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Text("Serie ${widget.esercizio.serie}"),
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text("reps :"),
           (_isEditingReps)
@@ -46,9 +46,9 @@ class _AllenamentoTileState extends State<AllenamentoTile> {
                       _isEditingReps = !_isEditingReps;
                     });
                   },
-                  child: Text(widget.esercizio.ripetizioni.toString())),
+                  child: Text(widget.detail.repetitions.toString())),
           Text("kg :"),
-          TextButton(onPressed: () {}, child: Text("${widget.esercizio.peso}")),
+          TextButton(onPressed: () {}, child: Text("${widget.detail.weight}")),
         ],
       ),
       trailing: IconButton(onPressed: () {}, icon: Icon(Icons.delete)),

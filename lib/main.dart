@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:workout_analyzer/pages/schede_page.dart';
+import 'package:workout_analyzer/pages/workout_plans_page.dart';
 import 'package:workout_analyzer/themes/dark_theme.dart';
 
 void main() {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Workout Analyzer',
       theme: darkTheme,
-      home: const SchedePage(),
+      home: const WorkoutPlansPage(),
     );
   }
 }

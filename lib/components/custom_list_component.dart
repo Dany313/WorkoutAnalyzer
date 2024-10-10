@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 
 // Widget riutilizzabile per visualizzare una lista di ListTile
-class CustomList extends StatefulWidget {
+class CustomListComponent extends StatefulWidget {
   final List<String> items;
-  final Function(String) onTap;
+  final Function(int, String) onEdit;
+  final Function(int) onRemove;
+  final Function(int) onTap;
 
-  const CustomList({
+  const CustomListComponent({
     super.key,
     required this.items,
+    required this.onRemove,
+    required this.onEdit,
     required this.onTap,
   });
 
   @override
-  State<CustomList> createState() => _CustomListState();
+  State<CustomListComponent> createState() => _CustomListComponentState();
 }
 
-class _CustomListState extends State<CustomList> {
+class _CustomListComponentState extends State<CustomListComponent> {
   bool _isEditingNome = false;
   late int _idEditNome;
 
@@ -46,7 +50,7 @@ class _CustomListState extends State<CustomList> {
                     autofocus: true,
                     onSubmitted: (newValue) {
                       setState(() {
-                        widget.items[index] = newValue;
+                        widget.onEdit(index, newValue);
                         _isEditingNome =
                             false; // Exit edit mode after submission
                       });
@@ -56,7 +60,7 @@ class _CustomListState extends State<CustomList> {
             trailing: IconButton(
               onPressed: () {
                 setState(() {
-                  widget.items.removeAt(index);
+                  widget.onRemove(index);
                 });
               },
               icon: const Icon(Icons.delete),
@@ -66,7 +70,7 @@ class _CustomListState extends State<CustomList> {
                 ? setState(() {
                     _isEditingNome = !_isEditingNome;
                   })
-                : widget.onTap(widget.items[index]),
+                : widget.onTap(index),
           );
         },
       ),

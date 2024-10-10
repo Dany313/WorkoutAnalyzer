@@ -75,7 +75,13 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                         onUpdateReps: (newReps) {
                           detail.repetitions = newReps;
                         },
-                        detail: detail,
+                        detail: detail, onUpdateWeight: (newWeight ) {
+                          detail.weight = newWeight;
+                      }, onDelete: () {
+                        setState(() {
+                          week.workoutDetails.remove(detail);
+                        });
+                      },
                       );
                     }),
                     // Aggiungi un IconButton per aggiungere un nuovo WorkoutDetail

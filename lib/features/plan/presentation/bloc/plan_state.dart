@@ -1,42 +1,41 @@
+import 'package:formz/formz.dart';
 
 import '../../domain/entity/plan_entity.dart';
+import '../forms/plan_form.dart';
+// Importa il tuo PlanName (Value Object Formz creato prima)
 
-abstract class PlanState {
-  const PlanState();
-}
+enum PlanStatus { initial, loading, success, failure, creating, removing }
 
-class PlanInitialState extends PlanState {
-  const PlanInitialState();
-}
-
-class PlanLoadingState extends PlanState {
-  const PlanLoadingState();
-}
-
-class CreatingPlanState extends PlanState {
-  const CreatingPlanState();
-}
-
-class PlanCreatedState extends PlanState {
-  const PlanCreatedState();
-}
-
-class RemovingPlanState extends PlanState {
-  const RemovingPlanState();
-}
-
-class PlanRemovedState extends PlanState {
-  const PlanRemovedState();
-}
-
-class PlanLoadedState extends PlanState {
+class PlanState {
   final List<PlanEntity> plans;
+  final PlanStatus status;
+  final String? errorMessage;
 
-  const PlanLoadedState(this.plans);
-}
+  // Campi Formz
+  final Name planName;
+  final bool isValid;
 
-class PlanErrorState extends PlanState {
-  final String message;
+  const PlanState({
+    this.plans = const [],
+    this.status = PlanStatus.initial,
+    this.errorMessage,
+    this.planName = const Name.pure(),
+    this.isValid = false,
+  });
 
-  const PlanErrorState(this.message);
+  PlanState copyWith({
+    List<PlanEntity>? plans,
+    PlanStatus? status,
+    String? errorMessage,
+    Name? planName,
+    bool? isValid,
+  }) {
+    return PlanState(
+      plans: plans ?? this.plans,
+      status: status ?? this.status,
+      errorMessage: errorMessage ?? this.errorMessage,
+      planName: planName ?? this.planName,
+      isValid: isValid ?? this.isValid,
+    );
+  }
 }

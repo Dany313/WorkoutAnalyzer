@@ -7,13 +7,16 @@ class GetPlansEvent extends PlanEvent {
 }
 
 class AddPlanEvent extends PlanEvent {
-  const AddPlanEvent({required this.name});
-
-  final String name;
+  const AddPlanEvent();
 }
 
 class RemovePlanEvent extends PlanEvent {
   const RemovePlanEvent({required this.id});
 
   final String id;
+}
+
+class PlanNameChanged extends PlanEvent {
+  final String name;
+  const PlanNameChanged(this.name);
 }

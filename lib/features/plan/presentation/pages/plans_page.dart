@@ -24,16 +24,16 @@ class PlansPage extends StatelessWidget {
       body: Center(
         child: BlocConsumer<PlanBloc, PlanState>(
           listener: (context, state) {
-            if (state is PlanErrorState) {
+            if (state.status == PlanStatus.failure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.message),
+                  content: Text(state.errorMessage!),
                 ));}
           },
           builder: (context, state) {
-            if (state is PlanLoadingState) {
+            if (state.status == PlanStatus.loading) {
               return const CircularProgressIndicator();
-            } else if (state is PlanLoadedState) {
+            } else if (state.status == PlanStatus.success) {
               return ListView.builder(
                 itemCount: state.plans.length,
                 itemBuilder: (context, index) {
@@ -45,8 +45,8 @@ class PlansPage extends StatelessWidget {
                   }, icon: Icon(Icons.delete)),);
                 },
               );
-            } else if (state is PlanErrorState) {
-              return Text('Error: ${state.message}');
+            } else if (state.status == PlanStatus.failure) {
+              return Text('Error: ${state.errorMessage!}');
             }
             return const Text('Press the button to load workout plans.');
           },

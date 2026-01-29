@@ -1,64 +1,62 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/plan_bloc.dart';
 import '../bloc/plan_event.dart';
+import '../bloc/plan_state.dart';
 
-class AddPlanDialog extends StatefulWidget {
+class AddPlanDialog extends StatelessWidget {
   const AddPlanDialog({super.key});
 
   @override
-  State<AddPlanDialog> createState() => _AddPlanDialogState();
-}
-
-class _AddPlanDialogState extends State<AddPlanDialog> {
-  final _formKey = GlobalKey<FormState>();
-
-
-  TextEditingController controller = TextEditingController();
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty || value.length < 6) {
-                  return 'Il campo non può essere vuoto o minore di 6 caratteri';
-                }
-                return null;
-      },
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: 'Inserisci nome del nuovo piano',
-              ),
-            ),
-            IconButton(onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                context.read<PlanBloc>()
-                    .add(AddPlanEvent(
-                    name: controller.value.text)
-                );
-                Navigator.pop(context);
-              }else{
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
-                );
-              }
-            },
-          icon: const Icon(Icons.add))
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Material(
+          type: MaterialType.canvas,
+          child: BlocBuilder<PlanBloc, PlanState>(
+            builder: (context, state) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    // Invia l'evento ad ogni modifica
+                    onChanged: (value) => context.read<PlanBloc>().add(PlanNameChanged(value)),
+                    decoration: InputDecoration(
+                      hintText: 'Inserisci nome del nuovo piano',
+                      errorText: state.planName.displayError != null
+                          ? 'Il campo non può essere vuoto o minore di 6 caratteri'
+                          : null,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        // Il bottone si abilita/disabilita in tempo reale!
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }
+                        , child: Text('Annulla'),
 
-          ],
+                      ),
+                      TextButton(
+                        // Il bottone si abilita/disabilita in tempo reale!
+                        onPressed: state.isValid && state.status != PlanStatus.creating
+                            ? () {
+                          context.read<PlanBloc>().add(const AddPlanEvent());
+                          Navigator.pop(context);
+                        }
+                            : null, child: Text('Crea'),
+
+                      ),
+                    ],
+                  )
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

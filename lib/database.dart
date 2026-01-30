@@ -12,14 +12,23 @@ class Plan extends Table {
 class Workout extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 6, max: 32)();
+  late final planId = integer().references(Plan, #id)();
 }
 
-@DriftDatabase(tables: [Plan])
+@DriftDatabase(tables: [Plan, Workout])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.
   // These are described in the getting started guide: https://drift.simonbinder.eu/setup/
-  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection()) {
+    customStatement('''
+      CREATE TABLE IF NOT EXISTS "workout" (
+        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        "name" TEXT NOT NULL,
+        "plan_id" INTEGER NOT NULL REFERENCES "plan" (id)
+      )
+    ''');
+  }
 
   @override
   int get schemaVersion => 1;

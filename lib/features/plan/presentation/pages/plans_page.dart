@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../bloc/plan_bloc.dart';
 import '../bloc/plan_event.dart';
@@ -38,9 +39,10 @@ class PlansPage extends StatelessWidget {
                 itemCount: state.plans.length,
                 itemBuilder: (context, index) {
                   final plan = state.plans[index];
-                  return ListTile(
+                    return ListTile(
                       title: Text(plan.name),
-                  trailing: Row(
+                      onTap: () => context.go('/plans/${plan.id}/workouts'),
+                    trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(onPressed: () => showDialog(

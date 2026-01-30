@@ -21,6 +21,14 @@ import 'features/plan/domain/usecases/add_plan_usecase.dart' as _i367;
 import 'features/plan/domain/usecases/delete_plan_usecase.dart' as _i543;
 import 'features/plan/domain/usecases/get_plans_usecase.dart' as _i854;
 import 'features/plan/domain/usecases/update_plan_usecase.dart' as _i456;
+import 'features/workout/data/datasources/workout_local_datasource.dart'
+    as _i783;
+import 'features/workout/data/repository/workout_repository_impl.dart' as _i596;
+import 'features/workout/domain/repository/workout_repository.dart' as _i494;
+import 'features/workout/domain/usecases/add_workout_usecase.dart' as _i453;
+import 'features/workout/domain/usecases/delete_workout_usecase.dart' as _i684;
+import 'features/workout/domain/usecases/get_workouts_usecase.dart' as _i292;
+import 'features/workout/domain/usecases/update_workout_usecase.dart' as _i789;
 import 'injection_module.dart' as _i212;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -37,8 +45,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i862.PlanDataSource>(
       () => _i862.PlanLocalDataSourceImpl(gh<_i969.AppDatabase>()),
     );
+    gh.lazySingleton<_i783.WorkoutDataSource>(
+      () => _i783.WorkoutLocalDataSourceImpl(gh<_i969.AppDatabase>()),
+    );
     gh.lazySingleton<_i2.PlanRepository>(
       () => _i911.PlanRepositoryImpl(gh<_i862.PlanDataSource>()),
+    );
+    gh.lazySingleton<_i494.WorkoutRepository>(
+      () => _i596.WorkoutRepositoryImpl(gh<_i783.WorkoutDataSource>()),
+    );
+    gh.lazySingleton<_i292.GetWorkoutsUseCase>(
+      () => _i292.GetWorkoutsUseCase(gh<_i494.WorkoutRepository>()),
     );
     gh.lazySingleton<_i367.AddPlanUseCase>(
       () => _i367.AddPlanUseCase(gh<_i2.PlanRepository>()),
@@ -51,6 +68,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i854.GetPlansUseCase>(
       () => _i854.GetPlansUseCase(gh<_i2.PlanRepository>()),
+    );
+    gh.lazySingleton<_i453.AddWorkoutUseCase>(
+      () => _i453.AddWorkoutUseCase(gh<_i494.WorkoutRepository>()),
+    );
+    gh.lazySingleton<_i684.DeleteWorkoutUseCase>(
+      () => _i684.DeleteWorkoutUseCase(gh<_i494.WorkoutRepository>()),
+    );
+    gh.lazySingleton<_i789.UpdateWorkoutUseCase>(
+      () => _i789.UpdateWorkoutUseCase(gh<_i494.WorkoutRepository>()),
     );
     return this;
   }

@@ -10,6 +10,12 @@ class AddPlanEvent extends PlanEvent {
   const AddPlanEvent();
 }
 
+class UpdatePlanEvent extends PlanEvent {
+  const UpdatePlanEvent({required this.id});
+
+  final String id;
+}
+
 class RemovePlanEvent extends PlanEvent {
   const RemovePlanEvent({required this.id});
 

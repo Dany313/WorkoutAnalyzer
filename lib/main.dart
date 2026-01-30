@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:workout_app/features/plan/domain/usecases/update_plan_usecase.dart';
 import 'package:workout_app/injection.dart';
 import 'package:workout_app/features/plan/domain/usecases/get_plans_usecase.dart';
 import 'package:workout_app/features/plan/domain/usecases/add_plan_usecase.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
             getPlansUseCase: getIt<GetPlansUseCase>(),
             addPlanUseCase: getIt<AddPlanUseCase>(),
             deletePlanUseCase: getIt<DeletePlanUseCase>(),
+            updatePlanUseCase: getIt<UpdatePlanUseCase>(),
           ),
       child: MaterialApp(
         title: 'Workout App',

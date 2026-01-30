@@ -5,8 +5,10 @@ import '../bloc/plan_bloc.dart';
 import '../bloc/plan_event.dart';
 import '../bloc/plan_state.dart';
 
-class AddPlanDialog extends StatelessWidget {
-  const AddPlanDialog({super.key});
+class AddUpdateDialog extends StatelessWidget {
+  final String? id;
+  final String? oldName;
+  const AddUpdateDialog({super.key, this.oldName, this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class AddPlanDialog extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    // Invia l'evento ad ogni modifica
+                    initialValue: oldName,
                     onChanged: (value) => context.read<PlanBloc>().add(PlanNameChanged(value)),
                     decoration: InputDecoration(
                       hintText: 'Inserisci nome del nuovo piano',
@@ -34,21 +36,22 @@ class AddPlanDialog extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       TextButton(
-                        // Il bottone si abilita/disabilita in tempo reale!
                         onPressed: () {
                           Navigator.pop(context);
                         }
                         , child: Text('Annulla'),
-
                       ),
                       TextButton(
-                        // Il bottone si abilita/disabilita in tempo reale!
                         onPressed: state.isValid && state.status != PlanStatus.creating
                             ? () {
-                          context.read<PlanBloc>().add(const AddPlanEvent());
+                          if (oldName != null && id != null) {
+                            context.read<PlanBloc>().add(UpdatePlanEvent(id: id!));
+                          } else {
+                            context.read<PlanBloc>().add(const AddPlanEvent());
+                          }
                           Navigator.pop(context);
                         }
-                            : null, child: Text('Crea'),
+                            : null, child: Text('Conferma'),
 
                       ),
                     ],

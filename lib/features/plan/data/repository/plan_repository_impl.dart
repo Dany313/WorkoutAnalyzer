@@ -4,8 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:workout_app/core/error/failure.dart';
 import 'package:workout_app/core/utils/typedef.dart';
-
-import '../../../../core/error/exeptions.dart';
+import 'package:workout_app/features/plan/domain/usecases/update_plan_usecase.dart';
 import '../../domain/entity/plan_entity.dart';
 import '../../domain/repository/plan_repository.dart';
 import '../datasources/plan_local_datasource.dart';
@@ -54,6 +53,16 @@ class PlanRepositoryImpl extends PlanRepository {
       return Right(plans.map((plan) => plan.toEntity()).toList());
     } on ServerFailure catch (e) {
       return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  ResultFuture<void> updatePlan(UpdatePlanParams params) async {
+    try {
+      await _localDataSource.updatePlan(params);
+      return Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

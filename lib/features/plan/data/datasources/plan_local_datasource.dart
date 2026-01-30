@@ -1,4 +1,6 @@
+import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
+import 'package:workout_app/features/plan/domain/usecases/update_plan_usecase.dart';
 
 import '../../../../database.dart';
 import '../model/plan_model.dart';
@@ -8,6 +10,7 @@ abstract class PlanDataSource {
   Future<void> savePlan(String name);
   Future<void> deletePlan(String planId);
   Future<PlanModel> getPlanById(String planId);
+  Future<void> updatePlan(UpdatePlanParams params);
 }
 
 @LazySingleton(as: PlanDataSource)
@@ -42,7 +45,18 @@ class PlanLocalDataSourceImpl implements PlanDataSource {
   }
 
   @override
-  Future<PlanModel> getPlanById(String planId) {
-    return Future.value(PlanModel.empty());
+  Future<PlanModel> getPlanById(String planId) async {
+    final result = await  (database.select(database.plan)..where((t) => t.id.equals(int.parse(planId)))).getSingle();
+    return PlanModel(id: result.id.toString(), name: result.name, workoutIds: []);
+  }
+
+  @override
+  Future<void> updatePlan(UpdatePlanParams params) {
+    return (database.update(database.plan)
+      ..where((t) => t.id.equals(int.parse(params.id)))
+    ).write(PlanCompanion(
+      name: Value(params.name),
+    ),
+    );
   }
 }

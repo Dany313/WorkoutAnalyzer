@@ -1,10 +1,15 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 part 'database.g.dart';
 
 class Plan extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 6, max: 32)();
+
+}
+
+class Workout extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 6, max: 32)();
 }

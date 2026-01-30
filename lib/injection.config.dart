@@ -20,6 +20,7 @@ import 'features/plan/domain/repository/plan_repository.dart' as _i2;
 import 'features/plan/domain/usecases/add_plan_usecase.dart' as _i367;
 import 'features/plan/domain/usecases/delete_plan_usecase.dart' as _i543;
 import 'features/plan/domain/usecases/get_plans_usecase.dart' as _i854;
+import 'features/plan/domain/usecases/update_plan_usecase.dart' as _i456;
 import 'injection_module.dart' as _i212;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -41,6 +42,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i367.AddPlanUseCase>(
       () => _i367.AddPlanUseCase(gh<_i2.PlanRepository>()),
+    );
+    gh.lazySingleton<_i456.UpdatePlanUseCase>(
+      () => _i456.UpdatePlanUseCase(gh<_i2.PlanRepository>()),
     );
     gh.lazySingleton<_i543.DeletePlanUseCase>(
       () => _i543.DeletePlanUseCase(gh<_i2.PlanRepository>()),

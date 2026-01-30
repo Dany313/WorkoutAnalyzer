@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/plan_bloc.dart';
 import '../bloc/plan_event.dart';
 import '../bloc/plan_state.dart';
-import '../widget/add_plan_dialog.dart';
+import '../widget/add_update_dialog.dart';
 
 class PlansPage extends StatelessWidget {
   const PlansPage({super.key});
@@ -16,11 +16,11 @@ class PlansPage extends StatelessWidget {
         onPressed:
             () => showDialog(
               context: context,
-              builder: (context) => const AddPlanDialog(),
+              builder: (context) => const AddUpdateDialog(),
             ),
         child: const Icon(Icons.add),
       ),
-      appBar: AppBar(title: const Text('Workout Plans')),
+      appBar: AppBar(title: const Text('Schede di allenamento')),
       body: Center(
         child: BlocConsumer<PlanBloc, PlanState>(
           listener: (context, state) {
@@ -40,9 +40,18 @@ class PlansPage extends StatelessWidget {
                   final plan = state.plans[index];
                   return ListTile(
                       title: Text(plan.name),
-                  trailing: IconButton(onPressed: () => {
-                    context.read<PlanBloc>().add(RemovePlanEvent(id: plan.id))
-                  }, icon: Icon(Icons.delete)),);
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => AddUpdateDialog(oldName: plan.name, id: plan.id,),
+                      ), icon: Icon(Icons.edit)),
+                      IconButton(onPressed: () => {
+                        context.read<PlanBloc>().add(RemovePlanEvent(id: plan.id))
+                      }, icon: Icon(Icons.delete)),
+                    ],
+                  ),);
                 },
               );
             } else if (state.status == PlanStatus.failure) {

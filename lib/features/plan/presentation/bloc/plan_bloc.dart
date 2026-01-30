@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:workout_app/features/plan/domain/usecases/update_plan_usecase.dart';
 import 'package:workout_app/features/plan/presentation/bloc/plan_event.dart';
 import 'package:workout_app/features/plan/presentation/bloc/plan_state.dart';
 import 'package:workout_app/features/plan/presentation/forms/plan_form.dart';
@@ -11,16 +12,19 @@ class PlanBloc extends Bloc<PlanEvent, PlanState> {
   final GetPlansUseCase getPlansUseCase;
   final AddPlanUseCase addPlanUseCase;
   final DeletePlanUseCase deletePlanUseCase;
+  final UpdatePlanUseCase updatePlanUseCase;
 
   PlanBloc({required this.getPlansUseCase,
     required this.addPlanUseCase,
-    required this.deletePlanUseCase
+    required this.deletePlanUseCase,
+    required this.updatePlanUseCase
   })
     : super(const PlanState()) {
     on<GetPlansEvent>(_onGetPlans);
     on<PlanNameChanged>(_onPlanNameChanged);
     on<AddPlanEvent>(_onAddPlan);
     on<RemovePlanEvent>(_onRemovePlan);
+    on<UpdatePlanEvent>(_updatePlan);
     add(GetPlansEvent());
   }
 
@@ -31,6 +35,21 @@ class PlanBloc extends Bloc<PlanEvent, PlanState> {
       planName: name,
       isValid: Formz.validate([name]), // Abilita/Disabilita il bottone
     ));
+  }
+
+  Future<void>_updatePlan(UpdatePlanEvent event, Emitter<PlanState> emit,
+      ) async {
+    emit(state.copyWith(status: PlanStatus.updating));
+
+    final result = await updatePlanUseCase(UpdatePlanParams(id: event.id, name: state.planName.value));
+
+    result.fold(
+          (error) => emit(state.copyWith(status: PlanStatus.failure, errorMessage: error.message)),
+          (plans) => emit(state.copyWith(status: PlanStatus.success,isValid: false, planName: const Name.pure())),
+    );
+
+    add(GetPlansEvent());
+
   }
 
 

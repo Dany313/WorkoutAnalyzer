@@ -1,10 +1,8 @@
-import 'package:formz/formz.dart';
 
 import '../../domain/entity/plan_entity.dart';
 import '../forms/plan_form.dart';
-// Importa il tuo PlanName (Value Object Formz creato prima)
 
-enum PlanStatus { initial, loading, success, failure, creating, removing }
+enum PlanStatus { initial, loading, success, failure, creating, removing, updating }
 
 class PlanState {
   final List<PlanEntity> plans;

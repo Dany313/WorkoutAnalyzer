@@ -1,5 +1,3 @@
-import 'dart:developer' as console;
-
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:workout_app/core/error/failure.dart';
@@ -21,7 +19,6 @@ class PlanRepositoryImpl extends PlanRepository {
       await _localDataSource.savePlan(name);
       return Right(null);
     } catch (e) {
-      console.log('addPlan error: ${e.toString()}');
       return Left(ServerFailure(e.toString()));
     }
   }

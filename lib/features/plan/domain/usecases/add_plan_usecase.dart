@@ -16,13 +16,13 @@ class AddPlanUseCase implements UseCaseWithParams<void, String> {
   ResultFuture<void> call(String name) async {
     // Validazione prima di chiamare il repository
     if (name.isEmpty) {
-      return Left(ServerFailure('Il nome non può essere vuoto'));
+      return Left(ValidationFailure('Il nome non può essere vuoto'));
     }
     if (name.length < 6) {
-      return Left(ServerFailure('Il nome deve avere almeno 6 caratteri'));
+      return Left(ValidationFailure('Il nome deve avere almeno 6 caratteri'));
     }
     if (name.length > 32) {
-      return Left(ServerFailure('Il nome non può avere più di 32 caratteri'));
+      return Left(ValidationFailure('Il nome non può avere più di 32 caratteri'));
     }
 
     return await repository.addPlan(name);

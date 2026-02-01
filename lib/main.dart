@@ -7,6 +7,11 @@ import 'package:workout_app/features/plan/domain/usecases/get_plans_usecase.dart
 import 'package:workout_app/features/plan/domain/usecases/add_plan_usecase.dart';
 import 'package:workout_app/features/plan/presentation/bloc/plan_bloc.dart';
 
+import 'features/exercises/domain/usecases/add_exercise_usecase.dart';
+import 'features/exercises/domain/usecases/delete_exercise_usecase.dart';
+import 'features/exercises/domain/usecases/get_exercises_usecase.dart';
+import 'features/exercises/domain/usecases/update_exercise_usecase.dart';
+import 'features/exercises/presentation/bloc/exercise_bloc.dart';
 import 'features/plan/domain/usecases/delete_plan_usecase.dart';
 import 'package:workout_app/features/workout/domain/usecases/get_workouts_usecase.dart';
 import 'package:workout_app/features/workout/domain/usecases/add_workout_usecase.dart';
@@ -45,6 +50,14 @@ class MyApp extends StatelessWidget {
             addWorkoutUseCase: getIt<AddWorkoutUseCase>(),
             deleteWorkoutUseCase: getIt<DeleteWorkoutUseCase>(),
             updateWorkoutUseCase: getIt<UpdateWorkoutUseCase>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ExerciseBloc(
+            getExercisesUseCase: getIt<GetExercisesUseCase>(),
+            addExerciseUseCase: getIt<AddExerciseUseCase>(),
+            deleteExerciseUseCase: getIt<DeleteExerciseUseCase>(),
+            updateExerciseUseCase: getIt<UpdateExerciseUseCase>(),
           ),
         ),
       ],

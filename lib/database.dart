@@ -15,7 +15,14 @@ class Workout extends Table {
   late final planId = integer().references(Plan, #id)();
 }
 
-@DriftDatabase(tables: [Plan, Workout])
+class Exercise extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 6, max: 32)();
+  TextColumn get description => text().withLength(min: 1, max: 256)();
+  TextColumn get targetMuscle => text().withLength(min: 1, max: 256)();
+}
+
+@DriftDatabase(tables: [Plan, Workout, Exercise])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.

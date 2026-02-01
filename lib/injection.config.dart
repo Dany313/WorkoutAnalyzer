@@ -14,6 +14,17 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
 import 'database.dart' as _i969;
+import 'features/exercises/data/datasources/workout_local_datasource.dart'
+    as _i177;
+import 'features/exercises/data/repository/workout_repository_impl.dart'
+    as _i147;
+import 'features/exercises/domain/repository/exercise_repository.dart' as _i865;
+import 'features/exercises/domain/usecases/add_exercise_usecase.dart' as _i231;
+import 'features/exercises/domain/usecases/delete_exercise_usecase.dart'
+    as _i1066;
+import 'features/exercises/domain/usecases/get_exercises_usecase.dart' as _i522;
+import 'features/exercises/domain/usecases/update_exercise_usecase.dart'
+    as _i103;
 import 'features/plan/data/datasources/plan_local_datasource.dart' as _i862;
 import 'features/plan/data/repository/plan_repository_impl.dart' as _i911;
 import 'features/plan/domain/repository/plan_repository.dart' as _i2;
@@ -42,11 +53,20 @@ extension GetItInjectableX on _i174.GetIt {
     final databaseModule = _$DatabaseModule();
     gh.singleton<_i361.Dio>(() => dioModule.dio);
     gh.lazySingleton<_i969.AppDatabase>(() => databaseModule.appDatabase);
+    gh.lazySingleton<_i177.ExerciseDataSource>(
+      () => _i177.ExerciseLocalDataSourceImpl(gh<_i969.AppDatabase>()),
+    );
     gh.lazySingleton<_i862.PlanDataSource>(
       () => _i862.PlanLocalDataSourceImpl(gh<_i969.AppDatabase>()),
     );
+    gh.lazySingleton<_i865.ExerciseRepository>(
+      () => _i147.ExerciseRepositoryImpl(gh<_i177.ExerciseDataSource>()),
+    );
     gh.lazySingleton<_i783.WorkoutDataSource>(
       () => _i783.WorkoutLocalDataSourceImpl(gh<_i969.AppDatabase>()),
+    );
+    gh.lazySingleton<_i522.GetExercisesUseCase>(
+      () => _i522.GetExercisesUseCase(gh<_i865.ExerciseRepository>()),
     );
     gh.lazySingleton<_i2.PlanRepository>(
       () => _i911.PlanRepositoryImpl(gh<_i862.PlanDataSource>()),
@@ -68,6 +88,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i854.GetPlansUseCase>(
       () => _i854.GetPlansUseCase(gh<_i2.PlanRepository>()),
+    );
+    gh.lazySingleton<_i231.AddExerciseUseCase>(
+      () => _i231.AddExerciseUseCase(gh<_i865.ExerciseRepository>()),
+    );
+    gh.lazySingleton<_i1066.DeleteExerciseUseCase>(
+      () => _i1066.DeleteExerciseUseCase(gh<_i865.ExerciseRepository>()),
+    );
+    gh.lazySingleton<_i103.UpdateExerciseUseCase>(
+      () => _i103.UpdateExerciseUseCase(gh<_i865.ExerciseRepository>()),
     );
     gh.lazySingleton<_i453.AddWorkoutUseCase>(
       () => _i453.AddWorkoutUseCase(gh<_i494.WorkoutRepository>()),

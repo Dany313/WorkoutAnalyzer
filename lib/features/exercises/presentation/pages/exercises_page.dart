@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:workout_app/features/workout/presentation/bloc/workout_bloc.dart';
-import 'package:workout_app/features/workout/presentation/bloc/workout_event.dart';
-import 'package:workout_app/features/workout/presentation/bloc/workout_state.dart';
 
-import '../widget/add_workout_dialog.dart';
+import '../bloc/exercise_bloc.dart';
+import '../bloc/exercise_event.dart';
+import '../bloc/exercise_state.dart';
+import '../widget/add_exercise_dialog.dart';
 
-class WorkoutsPage extends StatelessWidget {
-  final String planId;
-  const WorkoutsPage({super.key, required this.planId});
+class ExercisesPage extends StatelessWidget {
+  const ExercisesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,50 +17,49 @@ class WorkoutsPage extends StatelessWidget {
         onPressed:
             () => showDialog(
           context: context,
-          builder: (context) => AddUpdateWorkoutDialog(planId: planId,),
+          builder: (context) => AddUpdateExerciseDialog(),
         ),
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
           leading: IconButton(onPressed: () => context.go('/'), icon: Icon(Icons.keyboard_return)),
-          title: const Text('Workouts')),
+          title: const Text('Exercises')),
       body: Center(
-        child: BlocConsumer<WorkoutBloc, WorkoutState>(
+        child: BlocConsumer<ExerciseBloc, ExerciseState>(
           listener: (context, state) {
-            if (state.status == WorkoutStatus.failure) {
+            if (state.status == ExerciseStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.errorMessage!),
                   ));}
           },
           builder: (context, state) {
-            if (state.status == WorkoutStatus.loading) {
+            if (state.status == ExerciseStatus.loading) {
               return const CircularProgressIndicator();
-            }else if (state.status == WorkoutStatus.reloading){
-              context.read<WorkoutBloc>().add(GetWorkoutsEvent(planId: planId));
-            } else if (state.status == WorkoutStatus.success) {
+            }else if (state.status == ExerciseStatus.reloading){
+              context.read<ExerciseBloc>().add(GetExercisesEvent());
+            } else if (state.status == ExerciseStatus.success) {
               return ListView.builder(
-                itemCount: state.workouts.length,
+                itemCount: state.exercises.length,
                 itemBuilder: (context, index) {
-                  final workout = state.workouts[index];
+                  final workout = state.exercises[index];
                   return ListTile(
-                    onTap: () => context.go('/exercises', extra: workout),
                     title: Text(workout.name),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(onPressed: () => showDialog(
                           context: context,
-                          builder: (context) => AddUpdateWorkoutDialog(oldName: workout.name, id: workout.id, planId: planId),
+                          builder: (context) => AddUpdateExerciseDialog(oldName: workout.name, id: workout.id),
                         ), icon: Icon(Icons.edit)),
                         IconButton(onPressed: () => {
-                          context.read<WorkoutBloc>().add(RemoveWorkoutEvent(id: workout.id))
+                          context.read<ExerciseBloc>().add(RemoveExerciseEvent(id: workout.id))
                         }, icon: Icon(Icons.delete)),
                       ],
                     ),);
                 },
               );
-            } else if (state.status == WorkoutStatus.failure) {
+            } else if (state.status == ExerciseStatus.failure) {
               return Text('Error: ${state.errorMessage!}');
             }
             return const Text('Press the button to load workout plans.');

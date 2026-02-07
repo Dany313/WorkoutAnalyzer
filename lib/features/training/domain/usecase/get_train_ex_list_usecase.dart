@@ -5,13 +5,13 @@ import '../entity/training.dart';
 import '../repository/train_repository.dart';
 
 class GetTrainExListUsecase
-    extends UseCaseWithoutParams<List<TrainingExerciseEntity>> {
+    extends UseCaseWithParams<List<TrainingExerciseEntity>, String> {
   final TrainRepository repository;
 
   GetTrainExListUsecase(this.repository);
 
   @override
-  ResultFuture<List<TrainingExerciseEntity>> call() {
-    return repository.getTrainExList();
+  ResultFuture<List<TrainingExerciseEntity>> call(String workoutId) {
+    return repository.getTrainExList(workoutId);
   }
 }

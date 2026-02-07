@@ -8,7 +8,8 @@ import '../entity/exercise_entity.dart';
 import '../repository/exercise_repository.dart';
 
 @lazySingleton
-class AddExerciseUseCase implements UseCaseWithParams<void, AddExerciseParams> {
+class AddExerciseUseCase
+    implements UseCaseWithParams<String, AddExerciseParams> {
   final ExerciseRepository repository;
 
   AddExerciseUseCase(this.repository);
@@ -27,12 +28,12 @@ class AddExerciseUseCase implements UseCaseWithParams<void, AddExerciseParams> {
   }
 
   @override
-  ResultFuture<void> call(AddExerciseParams params) async {
+  ResultFuture<String> call(AddExerciseParams params) async {
     // Validazione
     var validation = _inputValidation(params);
 
-    if(validation.isLeft()){
-      return validation;
+    if (validation.isLeft()) {
+      return Left(validation.fold((failure) => failure, (_) => ValidationFailure('invalid input')));
     }
 
     return await repository.addExercise(params);

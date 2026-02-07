@@ -45,7 +45,8 @@ class WorkoutsPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final workout = state.workouts[index];
                   return ListTile(
-                    onTap: () => context.go('/exercises', extra: workout),
+                    onTap: () =>
+                        context.go('/workouts/${workout.id}/training', extra: workout),
                     title: Text(workout.name),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,

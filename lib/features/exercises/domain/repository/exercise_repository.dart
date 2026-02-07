@@ -4,7 +4,7 @@ import '../usecases/add_exercise_usecase.dart';
 import '../usecases/update_exercise_usecase.dart';
 
 abstract class ExerciseRepository {
-  ResultFuture<void> addExercise(AddExerciseParams params);
+  ResultFuture<String> addExercise(AddExerciseParams params);
   ResultFuture<List<ExerciseEntity>> getExercisesList();
   ResultFuture<ExerciseEntity> getExerciseById(String id);
   ResultFuture<void> deleteExerciseById(String id);

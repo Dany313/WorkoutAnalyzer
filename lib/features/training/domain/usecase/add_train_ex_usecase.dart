@@ -1,8 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:workout_app/core/usecases/usecase.dart';
 import 'package:workout_app/core/utils/typedef.dart';
 
 import '../repository/train_repository.dart';
 
+@lazySingleton
 class AddTrainExUsecase extends UseCaseWithParams<void, AddTrainExParams>{
   final TrainRepository repository;
 

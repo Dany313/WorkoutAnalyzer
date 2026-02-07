@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:workout_app/features/exercises/domain/entity/exercise_entity.dart';
 import 'package:workout_app/features/training/presentation/bloc/training_bloc.dart';
 import 'package:workout_app/features/training/presentation/bloc/training_event.dart';
@@ -8,11 +9,13 @@ import 'package:workout_app/features/training/presentation/widget/add_training_e
 
 class TrainingPage extends StatefulWidget {
   final String workoutId;
+  final String planId;
   final String? workoutName;
 
   const TrainingPage({
     super.key,
     required this.workoutId,
+    required this.planId,
     this.workoutName,
   });
 
@@ -41,7 +44,7 @@ class _TrainingPageState extends State<TrainingPage> {
       ),
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.go('/plans/${widget.planId}/workouts'),
           icon: const Icon(Icons.keyboard_return),
         ),
         title: Text(widget.workoutName ?? 'Training'),

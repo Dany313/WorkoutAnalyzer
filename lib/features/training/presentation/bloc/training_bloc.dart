@@ -11,6 +11,8 @@ import 'package:workout_app/features/training/presentation/bloc/training_event.d
 import 'package:workout_app/features/training/presentation/bloc/training_state.dart';
 import 'package:workout_app/features/training/presentation/forms/training_form.dart';
 
+import '../../../../core/enums/muscle_goups.dart';
+
 class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
   final GetTrainExListUsecase getTrainExListUsecase;
   final AddTrainExUsecase addTrainExUsecase;
@@ -49,19 +51,30 @@ class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
     TrainingLoadRequested event,
     Emitter<TrainingState> emit,
   ) async {
-    emit(state.copyWith(status: TrainingStatus.loading, workoutId: event.workoutId));
+    emit(
+      state.copyWith(
+        status: TrainingStatus.loading,
+        workoutId: event.workoutId,
+      ),
+    );
 
     final trainingResult = await getTrainExListUsecase(event.workoutId);
     final exercisesResult = await getExercisesUseCase();
 
     trainingResult.fold(
       (error) => emit(
-        state.copyWith(status: TrainingStatus.failure, errorMessage: error.message),
+        state.copyWith(
+          status: TrainingStatus.failure,
+          errorMessage: error.message,
+        ),
       ),
       (trainingExercises) {
         exercisesResult.fold(
           (error) => emit(
-            state.copyWith(status: TrainingStatus.failure, errorMessage: error.message),
+            state.copyWith(
+              status: TrainingStatus.failure,
+              errorMessage: error.message,
+            ),
           ),
           (exercises) => emit(
             state.copyWith(
@@ -96,34 +109,22 @@ class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
     emit(_validate(state.copyWith(selectedExerciseId: event.exerciseId)));
   }
 
-  void _onSetsChanged(
-    TrainingSetsChanged event,
-    Emitter<TrainingState> emit,
-  ) {
+  void _onSetsChanged(TrainingSetsChanged event, Emitter<TrainingState> emit) {
     final sets = SetsInput.dirty(event.sets);
     emit(_validate(state.copyWith(sets: sets)));
   }
 
-  void _onRepsChanged(
-    TrainingRepsChanged event,
-    Emitter<TrainingState> emit,
-  ) {
+  void _onRepsChanged(TrainingRepsChanged event, Emitter<TrainingState> emit) {
     final reps = RepsInput.dirty(event.reps);
     emit(_validate(state.copyWith(reps: reps)));
   }
 
-  void _onRestChanged(
-    TrainingRestChanged event,
-    Emitter<TrainingState> emit,
-  ) {
+  void _onRestChanged(TrainingRestChanged event, Emitter<TrainingState> emit) {
     final rest = RestSecondsInput.dirty(event.restSeconds);
     emit(_validate(state.copyWith(restSeconds: rest)));
   }
 
-  void _onRpeChanged(
-    TrainingRpeChanged event,
-    Emitter<TrainingState> emit,
-  ) {
+  void _onRpeChanged(TrainingRpeChanged event, Emitter<TrainingState> emit) {
     final rpe = RpeInput.dirty(event.rpe);
     emit(_validate(state.copyWith(rpe: rpe)));
   }
@@ -193,13 +194,15 @@ class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
         ),
       );
 
-      final maybeExerciseId = exerciseResult.fold<String?>(
-        (error) {
-          emit(state.copyWith(status: TrainingStatus.failure, errorMessage: error.message));
-          return null;
-        },
-        (id) => id,
-      );
+      final maybeExerciseId = exerciseResult.fold<String?>((error) {
+        emit(
+          state.copyWith(
+            status: TrainingStatus.failure,
+            errorMessage: error.message,
+          ),
+        );
+        return null;
+      }, (id) => id);
 
       if (maybeExerciseId == null) {
         return;
@@ -214,16 +217,20 @@ class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
         exerciseId: exerciseId,
         sets: int.parse(state.sets.value),
         reps: int.parse(state.reps.value),
-        restSeconds: state.restSeconds.value.isEmpty
-            ? 0
-            : int.parse(state.restSeconds.value),
+        restSeconds:
+            state.restSeconds.value.isEmpty
+                ? 0
+                : int.parse(state.restSeconds.value),
         rpe: int.parse(state.rpe.value),
       ),
     );
 
     addResult.fold(
       (error) => emit(
-        state.copyWith(status: TrainingStatus.failure, errorMessage: error.message),
+        state.copyWith(
+          status: TrainingStatus.failure,
+          errorMessage: error.message,
+        ),
       ),
       (r) => emit(
         state.copyWith(
@@ -253,23 +260,27 @@ class TrainingBloc extends Bloc<TrainingEvent, TrainingState> {
 
     result.fold(
       (error) => emit(
-        state.copyWith(status: TrainingStatus.failure, errorMessage: error.message),
+        state.copyWith(
+          status: TrainingStatus.failure,
+          errorMessage: error.message,
+        ),
       ),
       (r) => emit(state.copyWith(status: TrainingStatus.reloading)),
     );
   }
 
   TrainingState _validate(TrainingState currentState) {
-    final inputs = [
+    final inputs = <FormzInput>[
       currentState.sets,
       currentState.reps,
       currentState.restSeconds,
       currentState.rpe,
     ];
     final areNumbersValid = Formz.validate(inputs);
-    final hasExercise = currentState.useExistingExercise
-        ? currentState.selectedExerciseId != null
-        : currentState.exerciseName.valid;
+    final hasExercise =
+        currentState.useExistingExercise
+            ? currentState.selectedExerciseId != null
+            : currentState.exerciseName.value.isNotEmpty;
 
     return currentState.copyWith(isValid: areNumbersValid && hasExercise);
   }

@@ -24,6 +24,8 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     on<AddWorkoutEvent>(_onAddWorkout);
     on<RemoveWorkoutEvent>(_onRemoveWorkout);
     on<UpdateWorkoutEvent>(_updateWorkout);
+
+    add(GetWorkoutsEvent(planId: ''));
   }
 
   void _onWorkoutNameChanged(WorkoutNameChanged event, Emitter<WorkoutState> emit) {

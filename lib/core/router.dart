@@ -27,14 +27,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ExercisesPage(),
     ),
     GoRoute(
-      path: '/workouts/:workoutId/training',
+      path: '/workouts/:planId/:workoutId/training',
       name: 'training',
       builder: (context, state) {
         final workoutId = state.pathParameters['workoutId']!;
         final workout = state.extra as WorkoutEntity?;
+        final planId = state.pathParameters['planId']!;
         return TrainingPage(
           workoutId: workoutId,
           workoutName: workout?.name,
+          planId: planId,
         );
       },
     ),

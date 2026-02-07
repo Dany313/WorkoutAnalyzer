@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import '../../domain/entity/exercise_entity.dart';
+import '../../../../core/enums/muscle_goups.dart';
 import '../../domain/usecases/add_exercise_usecase.dart';
 import '../../domain/usecases/delete_exercise_usecase.dart';
 import '../../domain/usecases/get_exercises_usecase.dart';

@@ -1,14 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum MuscleGroups {
-  chest,
-  back,
-  shoulders,
-  biceps,
-  triceps,
-  legs,
-  abs,
-}
+import '../../../../core/enums/muscle_goups.dart';
 
 class ExerciseEntity extends Equatable {
   final String id;

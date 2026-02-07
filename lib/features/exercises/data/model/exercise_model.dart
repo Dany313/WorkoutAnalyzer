@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:workout_app/core/utils/typedef.dart';
+import '../../../../core/enums/muscle_goups.dart';
 import '../../domain/entity/exercise_entity.dart';
 
 class ExerciseModel {

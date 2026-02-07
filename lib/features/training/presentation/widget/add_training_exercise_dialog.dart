@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:workout_app/features/exercises/domain/entity/exercise_entity.dart';
 import 'package:workout_app/features/training/presentation/bloc/training_bloc.dart';
 import 'package:workout_app/features/training/presentation/bloc/training_event.dart';
 import 'package:workout_app/features/training/presentation/bloc/training_state.dart';
+
+import '../../../../core/enums/muscle_goups.dart';
 
 class AddTrainingExerciseDialog extends StatefulWidget {
   const AddTrainingExerciseDialog({super.key});
@@ -95,7 +96,7 @@ class _AddTrainingExerciseDialogState
                       ),
                       if (state.useExistingExercise)
                         DropdownButtonFormField<String>(
-                          value: state.selectedExerciseId,
+                          initialValue: state.selectedExerciseId,
                           items: state.exercises
                               .map(
                                 (exercise) => DropdownMenuItem(

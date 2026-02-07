@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:workout_app/features/exercises/domain/entity/exercise_entity.dart';
+
+import '../../../../core/enums/muscle_goups.dart';
 
 abstract class TrainingEvent extends Equatable {
   const TrainingEvent();

@@ -4,7 +4,7 @@ import 'package:workout_app/core/usecases/usecase.dart';
 import 'package:workout_app/core/utils/typedef.dart';
 import 'package:workout_app/core/error/failure.dart';
 
-import '../entity/exercise_entity.dart';
+import '../../../../core/enums/muscle_goups.dart';
 import '../repository/exercise_repository.dart';
 
 @lazySingleton

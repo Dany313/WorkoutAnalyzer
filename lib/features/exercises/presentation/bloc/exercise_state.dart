@@ -1,7 +1,16 @@
 import '../../domain/entity/exercise_entity.dart';
 import '../forms/exercise_form.dart';
 
-enum ExerciseStatus { initial, loading, success, failure, creating, removing, updating, reloading }
+enum ExerciseStatus {
+  initial,
+  loading,
+  success,
+  failure,
+  creating,
+  removing,
+  updating,
+  reloading,
+}
 
 class ExerciseState {
   final List<ExerciseEntity> exercises;
@@ -10,6 +19,8 @@ class ExerciseState {
 
   // Campi Formz
   final Name exerciseName;
+  final Description description;
+  final TargetMuscles targetMuscles;
   final bool isValid;
 
   const ExerciseState({
@@ -17,6 +28,8 @@ class ExerciseState {
     this.status = ExerciseStatus.initial,
     this.errorMessage,
     this.exerciseName = const Name.pure(),
+    this.description = const Description.pure(),
+    this.targetMuscles = const TargetMuscles.pure(),
     this.isValid = false,
   });
 
@@ -25,6 +38,8 @@ class ExerciseState {
     ExerciseStatus? status,
     String? errorMessage,
     Name? exerciseName,
+    Description? description,
+    TargetMuscles? targetMuscles,
     bool? isValid,
   }) {
     return ExerciseState(
@@ -32,6 +47,8 @@ class ExerciseState {
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       exerciseName: exerciseName ?? this.exerciseName,
+      description: description ?? this.description,
+      targetMuscles: targetMuscles ?? this.targetMuscles,
       isValid: isValid ?? this.isValid,
     );
   }

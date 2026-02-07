@@ -489,7 +489,7 @@ class $ExerciseTable extends Exercise
     aliasedName,
     false,
     additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
+      minTextLength: 0,
       maxTextLength: 256,
     ),
     type: DriftSqlType.string,

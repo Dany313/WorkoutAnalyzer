@@ -12,18 +12,27 @@ class UpdateExerciseUseCase implements UseCaseWithParams<void, UpdateExercisePar
   final ExerciseRepository repository;
 
   UpdateExerciseUseCase(this.repository);
+  Either<Failure, bool> _inputValidation(UpdateExerciseParams params){
+    if (params.name.isEmpty) {
+      return Left(ValidationFailure("name is empty"));
+    }
+    if (params.name.length < 6) {
+      return Left(ValidationFailure('name too short'));
+    }
+    if (params.name.length > 32) {
+      return Left(ValidationFailure('name too long'));
+    }
+    return Right(true);
+  }
+
 
   @override
   ResultFuture<void> call(UpdateExerciseParams params) async {
     // Validazione
-    if (params.name != null && params.name!.isEmpty) {
-      return Left(ServerFailure('Il nome non può essere vuoto'));
-    }
-    if (params.name != null && params.name!.length < 6) {
-      return Left(ServerFailure('Il nome deve avere almeno 6 caratteri'));
-    }
-    if (params.name != null && params.name!.length > 32) {
-      return Left(ServerFailure('Il nome non può avere più di 32 caratteri'));
+    var validation = _inputValidation(params);
+
+    if(validation.isLeft()){
+      return validation;
     }
 
     return await repository.updateExercise(params);
@@ -32,12 +41,12 @@ class UpdateExerciseUseCase implements UseCaseWithParams<void, UpdateExercisePar
 
 class UpdateExerciseParams {
   final String id;
-  final String? name;
-  final String? description;
-  final Map<MuscleGroups, int>? targetMuscles;
+  final String name;
+  final String description;
+  final Map<MuscleGroups, int> targetMuscles;
 
 
-  const UpdateExerciseParams({required this.id, this.name, this.description, this.targetMuscles});
+  const UpdateExerciseParams({required this.id, required this.name, required this.description, required this.targetMuscles});
 
   UpdateExerciseParams copyWith({String? id, String? name, String? description, Map<MuscleGroups, int>? targetMuscles}) {
     return UpdateExerciseParams(

@@ -31,37 +31,67 @@ class ExerciseLocalDataSourceImpl implements ExerciseDataSource {
 
   @override
   Future<List<ExerciseModel>> getExercises() async {
-    final result = (await (database.select(database.exercise)).get())
-        .map((e) => ExerciseModel(id: e.id.toString(), name: e.name, description: e.description, targetMuscles: jsonDecode(e.targetMuscle)))
-        .toList();
+    final result =
+        (await (database.select(database.exercise)).get())
+            .map(
+              (e) => ExerciseModel(
+                id: e.id.toString(),
+                name: e.name,
+                description: e.description,
+                targetMuscles: e.targetMuscle,
+              ),
+            )
+            .toList();
 
     return Future.value(result);
   }
 
   @override
   Future<void> saveExercise(AddExerciseParams params) async {
-    await database.into(database.exercise).insert(
-      ExerciseCompanion.insert(name: params.name, description: params.description, targetMuscle: jsonEncode(params.targetMuscles)),
+    print(params.targetMuscles);
+    final encodedMuscles = jsonEncode(
+      params.targetMuscles.map((key, value) => MapEntry(key.name.toString(), value.toString())),
     );
+    print(encodedMuscles);
+    await database
+        .into(database.exercise)
+        .insert(
+          ExerciseCompanion.insert(
+            name: params.name,
+            description: params.description,
+            targetMuscle: encodedMuscles,
+          ),
+        );
     return Future.value();
   }
 
   @override
   Future<ExerciseModel> getExerciseById(String id) async {
-    final result = await (database.select(database.exercise)
-          ..where((t) => t.id.equals(int.parse(id))))
-        .getSingle();
-    return ExerciseModel(id: result.id.toString(), name: result.name, description: result.description, targetMuscles: jsonDecode(result.targetMuscle));
+    final result =
+        await (database.select(database.exercise)
+          ..where((t) => t.id.equals(int.parse(id)))).getSingle();
+    return ExerciseModel(
+      id: result.id.toString(),
+      name: result.name,
+      description: result.description,
+      targetMuscles: jsonDecode(result.targetMuscle),
+    );
   }
 
   @override
   Future<void> updateExercise(UpdateExerciseParams params) {
+    print(params.targetMuscles);
+    final encodedMuscles = jsonEncode(
+      params.targetMuscles.map((key, value) => MapEntry(key.name.toString(), value.toString())),
+    );
+    print(encodedMuscles);
     return (database.update(database.exercise)
-      ..where((t) => t.id.equals(int.parse(params.id))))
-        .write(ExerciseCompanion(
-          name: Value(params.name!),
-          description: Value(params.description ?? ''),
-          targetMuscle: Value(jsonEncode(params.targetMuscles!)),
-        ));
+      ..where((t) => t.id.equals(int.parse(params.id)))).write(
+      ExerciseCompanion(
+        name: Value(params.name),
+        description: Value(params.description),
+        targetMuscle: Value(encodedMuscles),
+      ),
+    );
   }
 }

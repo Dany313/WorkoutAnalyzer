@@ -1,3 +1,5 @@
+import '../../domain/entity/exercise_entity.dart';
+
 abstract class ExerciseEvent {
   const ExerciseEvent();
 }
@@ -26,3 +28,30 @@ class ExerciseNameChanged extends ExerciseEvent {
   const ExerciseNameChanged(this.name);
 }
 
+class ExerciseDescriptionChanged extends ExerciseEvent {
+  final String description;
+  const ExerciseDescriptionChanged(this.description);
+}
+
+class ExerciseTargetMuscleAdded extends ExerciseEvent {
+  final MuscleGroups muscle;
+  final int percentage;
+  const ExerciseTargetMuscleAdded({
+    required this.muscle,
+    required this.percentage,
+  });
+}
+
+class ExerciseTargetMuscleRemoved extends ExerciseEvent {
+  final MuscleGroups muscle;
+  const ExerciseTargetMuscleRemoved({required this.muscle});
+}
+
+class ExerciseTargetMusclePercentageChanged extends ExerciseEvent {
+  final MuscleGroups muscle;
+  final int percentage;
+  const ExerciseTargetMusclePercentageChanged({
+    required this.muscle,
+    required this.percentage,
+  });
+}

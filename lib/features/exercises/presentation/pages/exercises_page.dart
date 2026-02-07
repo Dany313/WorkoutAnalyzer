@@ -16,27 +16,31 @@ class ExercisesPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed:
             () => showDialog(
-          context: context,
-          builder: (context) => AddUpdateExerciseDialog(),
-        ),
+              context: context,
+              builder: (context) => const AddUpdateExerciseDialog(),
+            ),
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
-          leading: IconButton(onPressed: () => context.go('/'), icon: Icon(Icons.keyboard_return)),
-          title: const Text('Exercises')),
+        leading: IconButton(
+          onPressed: () => context.go('/'),
+          icon: Icon(Icons.keyboard_return),
+        ),
+        title: const Text('Exercises'),
+      ),
       body: Center(
         child: BlocConsumer<ExerciseBloc, ExerciseState>(
           listener: (context, state) {
             if (state.status == ExerciseStatus.failure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                  ));}
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+            }
           },
           builder: (context, state) {
             if (state.status == ExerciseStatus.loading) {
               return const CircularProgressIndicator();
-            }else if (state.status == ExerciseStatus.reloading){
+            } else if (state.status == ExerciseStatus.reloading) {
               context.read<ExerciseBloc>().add(GetExercisesEvent());
             } else if (state.status == ExerciseStatus.success) {
               return ListView.builder(
@@ -48,15 +52,32 @@ class ExercisesPage extends StatelessWidget {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(onPressed: () => showDialog(
-                          context: context,
-                          builder: (context) => AddUpdateExerciseDialog(oldName: workout.name, id: workout.id),
-                        ), icon: Icon(Icons.edit)),
-                        IconButton(onPressed: () => {
-                          context.read<ExerciseBloc>().add(RemoveExerciseEvent(id: workout.id))
-                        }, icon: Icon(Icons.delete)),
+                        IconButton(
+                          onPressed:
+                              () => showDialog(
+                                context: context,
+                                builder:
+                                    (context) => AddUpdateExerciseDialog(
+                                      oldName: workout.name,
+                                      oldDescription: workout.description,
+                                      oldTargetMuscles: workout.targetMuscles,
+                                      id: workout.id,
+                                    ),
+                              ),
+                          icon: const Icon(Icons.edit),
+                        ),
+                        IconButton(
+                          onPressed:
+                              () => {
+                                context.read<ExerciseBloc>().add(
+                                  RemoveExerciseEvent(id: workout.id),
+                                ),
+                              },
+                          icon: Icon(Icons.delete),
+                        ),
                       ],
-                    ),);
+                    ),
+                  );
                 },
               );
             } else if (state.status == ExerciseStatus.failure) {

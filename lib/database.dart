@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:developer' as developer;
 part 'database.g.dart';
 
 class Plan extends Table {
@@ -17,7 +18,7 @@ class Workout extends Table {
 class Exercise extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 6, max: 32)();
-  TextColumn get description => text().withLength(min: 1, max: 256)();
+  TextColumn get description => text().withLength(min: 0, max: 256)();
   TextColumn get targetMuscle => text().withLength(min: 1, max: 256)();
 }
 
@@ -33,22 +34,26 @@ class Training extends Table {
 
 @DriftDatabase(tables: [Plan, Workout, Exercise, Training])
 class AppDatabase extends _$AppDatabase {
-  // After generating code, this class needs to define a `schemaVersion` getter
-  // and a constructor telling drift where the database should be stored.
-  // These are described in the getting started guide: https://drift.simonbinder.eu/setup/
-  AppDatabase([QueryExecutor? executor])
-    : super(executor ?? _openConnection()) {
-    customStatement('''
-      CREATE TABLE IF NOT EXISTS "workout" (
-        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-        "name" TEXT NOT NULL,
-        "plan_id" INTEGER NOT NULL REFERENCES "plan" (id)
-      )
-    ''');
-  }
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      // In development, drop and recreate all tables on upgrade
+      developer.log('Rebuilding database schema (hot reload detected)');
+
+      await m.deleteTable('training');
+      await m.deleteTable('exercise');
+      await m.deleteTable('workout');
+      await m.deleteTable('plan');
+
+      await m.createAll();
+    },
+  );
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -60,5 +65,14 @@ class AppDatabase extends _$AppDatabase {
       ),
       // If you need web support, see https://drift.simonbinder.eu/platforms/web/
     );
+  }
+
+  /// Cancella tutti i record da tutte le tabelle
+  Future<void> clearAllData() async {
+    await delete(training).go();
+    await delete(workout).go();
+    await delete(exercise).go();
+    await delete(plan).go();
+    developer.log('Database cleared: all records deleted');
   }
 }

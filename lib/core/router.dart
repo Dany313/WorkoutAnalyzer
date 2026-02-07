@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:workout_app/features/exercises/presentation/pages/exercises_page.dart';
-import 'package:workout_app/features/plan/presentation/pages/plans_page.dart';
+import 'package:workout_app/features/home/presentation/pages/home_page.dart';
 import 'package:workout_app/features/workout/presentation/pages/workouts_page.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -8,8 +8,8 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      name: 'plans',
-      builder: (context, state) => const PlansPage(),
+      name: 'home',
+      builder: (context, state) => const HomePage(),
     ),
     GoRoute(
       path: '/plans/:planId/workouts',

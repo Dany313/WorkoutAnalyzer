@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" modified="2025-02-14T00:00:00.000Z" agent="Mozilla/5.0" version="22.1.0" type="device">
+  <diagram id="features-diagram" name="Features">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="app" value="Workout App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="430" y="40" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="features" value="Features" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="200" y="140" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="core" value="Core" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="640" y="140" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="app_to_features" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="app" target="features">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="app_to_core" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="app" target="core">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="plan" value="Plan" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="workout" value="Workout" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="exercises" value="Exercises" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="training" value="Training" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="home" value="Home" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="780" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="features_to_plan" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="features" target="plan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="features_to_workout" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="features" target="workout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="features_to_exercises" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="features" target="exercises">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="features_to_training" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="features" target="training">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="features_to_home" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="features" target="home">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="layer" value="Layers per feature: data / domain / presentation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="260" y="360" width="520" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="plan_to_layer" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="plan" target="layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="workout_to_layer" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="workout" target="layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="exercises_to_layer" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="exercises" target="layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="training_to_layer" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="training" target="layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="home_to_layer" style="endArrow=block;html=1;rounded=1;" edge="1" parent="1" source="home" target="layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

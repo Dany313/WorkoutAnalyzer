@@ -18,6 +18,11 @@ import 'package:workout_app/features/workout/domain/usecases/add_workout_usecase
 import 'package:workout_app/features/workout/domain/usecases/delete_workout_usecase.dart';
 import 'package:workout_app/features/workout/domain/usecases/update_workout_usecase.dart';
 import 'package:workout_app/features/workout/presentation/bloc/workout_bloc.dart';
+import 'package:workout_app/features/training/domain/usecase/add_train_ex_usecase.dart';
+import 'package:workout_app/features/training/domain/usecase/delete_train_ex_usecase.dart';
+import 'package:workout_app/features/training/domain/usecase/get_train_ex_list_usecase.dart';
+import 'package:workout_app/features/training/domain/usecase/update_train_ex_usecase.dart';
+import 'package:workout_app/features/training/presentation/bloc/training_bloc.dart';
 
 void main() {
   // Assicurati che i widget siano pronti prima di configurare la DI
@@ -58,6 +63,16 @@ class MyApp extends StatelessWidget {
             addExerciseUseCase: getIt<AddExerciseUseCase>(),
             deleteExerciseUseCase: getIt<DeleteExerciseUseCase>(),
             updateExerciseUseCase: getIt<UpdateExerciseUseCase>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => TrainingBloc(
+            getTrainExListUsecase: getIt<GetTrainExListUsecase>(),
+            addTrainExUsecase: getIt<AddTrainExUsecase>(),
+            deleteTrainExUsecase: getIt<DeleteTrainExUsecase>(),
+            updateTrainExUsecase: getIt<UpdateTrainExUsecase>(),
+            getExercisesUseCase: getIt<GetExercisesUseCase>(),
+            addExerciseUseCase: getIt<AddExerciseUseCase>(),
           ),
         ),
       ],

@@ -10,7 +10,7 @@ import '../../domain/usecases/update_exercise_usecase.dart';
 
 abstract class ExerciseDataSource {
   Future<List<ExerciseModel>> getExercises();
-  Future<void> saveExercise(AddExerciseParams params);
+  Future<String> saveExercise(AddExerciseParams params);
   Future<void> deleteExercise(String workoutId);
   Future<ExerciseModel> getExerciseById(String workoutId);
   Future<void> updateExercise(UpdateExerciseParams params);
@@ -47,13 +47,13 @@ class ExerciseLocalDataSourceImpl implements ExerciseDataSource {
   }
 
   @override
-  Future<void> saveExercise(AddExerciseParams params) async {
+  Future<String> saveExercise(AddExerciseParams params) async {
     print(params.targetMuscles);
     final encodedMuscles = jsonEncode(
       params.targetMuscles.map((key, value) => MapEntry(key.name.toString(), value.toString())),
     );
     print(encodedMuscles);
-    await database
+    final id = await database
         .into(database.exercise)
         .insert(
           ExerciseCompanion.insert(
@@ -62,7 +62,7 @@ class ExerciseLocalDataSourceImpl implements ExerciseDataSource {
             targetMuscle: encodedMuscles,
           ),
         );
-    return Future.value();
+    return id.toString();
   }
 
   @override

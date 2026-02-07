@@ -8,6 +8,6 @@ abstract class TrainRepository {
   ResultFuture<void> addTrainEx(AddTrainExParams params);
   ResultFuture<void> deleteTrainExById(String id);
   ResultFuture<void> updateTrainEx(UpdateTrainExParams params);
-  ResultFuture<List<TrainingExerciseEntity>> getTrainExList();
+  ResultFuture<List<TrainingExerciseEntity>> getTrainExList(String workoutId);
   ResultFuture<TrainingExerciseEntity> getTrainExById(String id);
 }

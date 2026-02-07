@@ -17,10 +17,10 @@ class ExerciseRepositoryImpl extends ExerciseRepository {
   ExerciseRepositoryImpl(this._localDataSource);
 
   @override
-  ResultFuture<void> addExercise(AddExerciseParams params) async {
+  ResultFuture<String> addExercise(AddExerciseParams params) async {
     try {
-      await _localDataSource.saveExercise(params);
-      return Right(null);
+      final exerciseId = await _localDataSource.saveExercise(params);
+      return Right(exerciseId);
     } catch (e) {
       console.log('addExercise error: ${e.toString()}');
       return Left(ServerFailure(e.toString()));

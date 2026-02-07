@@ -35,6 +35,9 @@ class WorkoutsPage extends StatelessWidget {
                   ));}
           },
           builder: (context, state) {
+            if(state.status == WorkoutStatus.initial){
+              context.read<WorkoutBloc>().add(GetWorkoutsEvent(planId: planId));
+            }
             if (state.status == WorkoutStatus.loading) {
               return const CircularProgressIndicator();
             }else if (state.status == WorkoutStatus.reloading){
@@ -45,7 +48,8 @@ class WorkoutsPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final workout = state.workouts[index];
                   return ListTile(
-                    onTap: () => context.go('/exercises', extra: workout),
+                    onTap: () =>
+                        context.go('/workouts/$planId/${workout.id}/training', extra: workout),
                     title: Text(workout.name),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,

@@ -1,5 +1,5 @@
 import 'package:formz/formz.dart';
-import '../../domain/entity/exercise_entity.dart';
+import '../../../../core/enums/muscle_goups.dart';
 
 enum NameValidationError { empty, tooShort, tooLong }
 

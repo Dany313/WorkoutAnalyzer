@@ -1,4 +1,4 @@
-import '../../domain/entity/exercise_entity.dart';
+import '../../../../core/enums/muscle_goups.dart';
 
 abstract class ExerciseEvent {
   const ExerciseEvent();

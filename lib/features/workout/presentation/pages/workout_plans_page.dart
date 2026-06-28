@@ -72,11 +72,22 @@ class WorkoutPlansPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                              onPressed: () {
-                                context.read<WorkoutCubit>().deletePlan(plan.id);
-                              },
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                                  onPressed: () {
+                                    _showPlanBottomSheet(context, existingPlan: plan);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                  onPressed: () {
+                                    context.read<WorkoutCubit>().deletePlan(plan.id);
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -90,15 +101,17 @@ class WorkoutPlansPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreatePlanBottomSheet(context),
+        onPressed: () => _showPlanBottomSheet(context),
         icon: const Icon(Icons.add),
         label: const Text('Nuovo Piano'),
       ),
     );
   }
 
-  void _showCreatePlanBottomSheet(BuildContext context) {
-    final controller = TextEditingController();
+  void _showPlanBottomSheet(BuildContext context, {WorkoutPlan? existingPlan}) {
+    final isEditing = existingPlan != null;
+    final controller = TextEditingController(text: existingPlan?.name ?? '');
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -114,7 +127,7 @@ class WorkoutPlansPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Nuovo Piano di Allenamento',
+              isEditing ? 'Modifica Piano' : 'Nuovo Piano di Allenamento',
               style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -131,16 +144,18 @@ class WorkoutPlansPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (controller.text.trim().isNotEmpty) {
-                  final newPlan = WorkoutPlan(
-                    id: const Uuid().v4(),
-                    name: controller.text.trim(),
-                    sessions: [],
-                  );
+                  final newPlan = isEditing
+                      ? existingPlan.copyWith(name: controller.text.trim())
+                      : WorkoutPlan(
+                          id: const Uuid().v4(),
+                          name: controller.text.trim(),
+                          sessions: [],
+                        );
                   context.read<WorkoutCubit>().savePlan(newPlan);
                   Navigator.pop(ctx);
                 }
               },
-              child: const Text('Crea Piano'),
+              child: Text(isEditing ? 'Salva Modifiche' : 'Crea Piano'),
             ),
             const SizedBox(height: 24),
           ],

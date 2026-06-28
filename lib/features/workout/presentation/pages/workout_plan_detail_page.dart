@@ -99,14 +99,25 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                        onPressed: () {
-                          final newSessions =
-                              List<WorkoutSession>.from(_plan.sessions)
-                                ..removeAt(index);
-                          _updatePlan(_plan.copyWith(sessions: newSessions));
-                        },
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                            onPressed: () {
+                              _showSessionBottomSheet(context, existingSession: session, index: index);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                            onPressed: () {
+                              final newSessions =
+                                  List<WorkoutSession>.from(_plan.sessions)
+                                    ..removeAt(index);
+                              _updatePlan(_plan.copyWith(sessions: newSessions));
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -114,15 +125,17 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
               },
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateSessionBottomSheet(context),
+        onPressed: () => _showSessionBottomSheet(context),
         icon: const Icon(Icons.add),
         label: const Text('Nuova Seduta'),
       ),
     );
   }
 
-  void _showCreateSessionBottomSheet(BuildContext context) {
-    final controller = TextEditingController();
+  void _showSessionBottomSheet(BuildContext context, {WorkoutSession? existingSession, int? index}) {
+    final isEditing = existingSession != null && index != null;
+    final controller = TextEditingController(text: existingSession?.name ?? '');
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -138,7 +151,7 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Nuova Seduta',
+              isEditing ? 'Modifica Seduta' : 'Nuova Seduta',
               style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -155,18 +168,25 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
             ElevatedButton(
               onPressed: () {
                 if (controller.text.trim().isNotEmpty) {
-                  final newSession = WorkoutSession(
-                    id: const Uuid().v4(),
-                    name: controller.text.trim(),
-                    items: [],
-                  );
-                  final newSessions = List<WorkoutSession>.from(_plan.sessions)
-                    ..add(newSession);
-                  _updatePlan(_plan.copyWith(sessions: newSessions));
+                  if (isEditing) {
+                    final updatedSession = existingSession.copyWith(name: controller.text.trim());
+                    final newSessions = List<WorkoutSession>.from(_plan.sessions);
+                    newSessions[index] = updatedSession;
+                    _updatePlan(_plan.copyWith(sessions: newSessions));
+                  } else {
+                    final newSession = WorkoutSession(
+                      id: const Uuid().v4(),
+                      name: controller.text.trim(),
+                      items: [],
+                    );
+                    final newSessions = List<WorkoutSession>.from(_plan.sessions)
+                      ..add(newSession);
+                    _updatePlan(_plan.copyWith(sessions: newSessions));
+                  }
                   Navigator.pop(ctx);
                 }
               },
-              child: const Text('Aggiungi Seduta'),
+              child: Text(isEditing ? 'Salva Modifiche' : 'Aggiungi Seduta'),
             ),
             const SizedBox(height: 24),
           ],
@@ -175,3 +195,4 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
     );
   }
 }
+

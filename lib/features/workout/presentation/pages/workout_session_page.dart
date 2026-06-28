@@ -121,36 +121,47 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${exercise.sets.length} serie',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.secondary,
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${exercise.sets.length} serie',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                  onPressed: () {
+                    _showCreateExerciseBottomSheet(existingExercise: exercise, itemIndex: itemIndex);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () {
+                    _session = _session.copyWith(
+                      items: List.from(_session.items)..removeAt(itemIndex),
+                    );
+                    _updateSession();
+                  },
                 ),
               ],
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-            onPressed: () {
-              _session = _session.copyWith(
-                items: List.from(_session.items)..removeAt(itemIndex),
-              );
-              _updateSession();
-            },
-          ),
-        ],
-      ),
+          ],
+        ),
     );
   }
 
@@ -294,9 +305,11 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
     );
   }
 
-  void _showCreateExerciseBottomSheet() {
-    final nameController = TextEditingController();
-    final descController = TextEditingController();
+  void _showCreateExerciseBottomSheet({Exercise? existingExercise, int? itemIndex}) {
+    final isEditing = existingExercise != null && itemIndex != null;
+    final nameController = TextEditingController(text: existingExercise?.name ?? '');
+    final descController = TextEditingController(text: existingExercise?.description ?? '');
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -312,7 +325,7 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Nuovo Esercizio',
+              isEditing ? 'Modifica Esercizio' : 'Nuovo Esercizio',
               style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -336,21 +349,30 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
             ElevatedButton(
               onPressed: () {
                 if (nameController.text.trim().isNotEmpty) {
-                  final exercise = Exercise(
-                    id: const Uuid().v4(),
-                    name: nameController.text.trim(),
-                    description: descController.text.trim(),
-                    sets: [],
-                  );
-
-                  final newItems = List<WorkoutItem>.from(_session.items);
-                  newItems.add(WorkoutItem.single(exercise: exercise));
-                  _session = _session.copyWith(items: newItems);
+                  if (isEditing) {
+                    final exercise = existingExercise.copyWith(
+                      name: nameController.text.trim(),
+                      description: descController.text.trim(),
+                    );
+                    final newItems = List<WorkoutItem>.from(_session.items);
+                    newItems[itemIndex] = WorkoutItem.single(exercise: exercise);
+                    _session = _session.copyWith(items: newItems);
+                  } else {
+                    final exercise = Exercise(
+                      id: const Uuid().v4(),
+                      name: nameController.text.trim(),
+                      description: descController.text.trim(),
+                      sets: [],
+                    );
+                    final newItems = List<WorkoutItem>.from(_session.items);
+                    newItems.add(WorkoutItem.single(exercise: exercise));
+                    _session = _session.copyWith(items: newItems);
+                  }
                   _updateSession();
                   Navigator.pop(ctx);
                 }
               },
-              child: const Text('Aggiungi Esercizio'),
+              child: Text(isEditing ? 'Salva Modifiche' : 'Aggiungi Esercizio'),
             ),
             const SizedBox(height: 24),
           ],

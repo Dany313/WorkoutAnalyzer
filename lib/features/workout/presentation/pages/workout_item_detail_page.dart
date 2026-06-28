@@ -101,45 +101,52 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
           final set = entry.value;
           return AppCard(
             margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '${setIndex + 1}',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+            padding: EdgeInsets.zero,
+            child: InkWell(
+              onTap: () => _showAddSetBottomSheet(exercise, setIndexToEdit: setIndex, existingSet: set),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${setIndex + 1}',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildSetStat('${set.reps}', 'Rip'),
+                          _buildSetStat('${set.weight}', 'kg'),
+                          _buildSetStat('${set.restTimeSeconds}s', 'Rec'),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                      onPressed: () {
+                        final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
+                        _updateItem(WorkoutItem.single(exercise: exercise.copyWith(sets: newSets)));
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildSetStat('${set.reps}', 'Rip'),
-                      _buildSetStat('${set.weight}', 'kg'),
-                      _buildSetStat('${set.restTimeSeconds}s', 'Rec'),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () {
-                    final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
-                    _updateItem(WorkoutItem.single(exercise: exercise.copyWith(sets: newSets)));
-                  },
-                ),
-              ],
+              ),
             ),
           );
         }),
@@ -190,14 +197,28 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                               ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () {
-                          final newExercises = List<Exercise>.from(exercises)..removeAt(exIndex);
-                          _updateItem(WorkoutItem.superset(exercises: newExercises));
-                        },
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              _showCreateExerciseBottomSheet(existingExercise: exercise, supersetExerciseIndex: exIndex);
+                            },
+                          ),
+                          const SizedBox(width: 16),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              final newExercises = List<Exercise>.from(exercises)..removeAt(exIndex);
+                              _updateItem(WorkoutItem.superset(exercises: newExercises));
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -220,33 +241,40 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                         final set = setEntry.value;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 30,
-                                child: Text(
-                                  'S${setIndex + 1}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
+                          child: InkWell(
+                            onTap: () => _showAddSetBottomSheet(exercise, supersetExerciseIndex: exIndex, setIndexToEdit: setIndex, existingSet: set),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 30,
+                                    child: Text(
+                                      'S${setIndex + 1}',
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${set.reps} rip • ${set.weight} kg • rec ${set.restTimeSeconds}s',
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: () {
+                                      final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
+                                      final newExercise = exercise.copyWith(sets: newSets);
+                                      final newExercises = List<Exercise>.from(exercises);
+                                      newExercises[exIndex] = newExercise;
+                                      _updateItem(WorkoutItem.superset(exercises: newExercises));
+                                    },
+                                  ),
+                                ],
                               ),
-                              Expanded(
-                                child: Text(
-                                  '${set.reps} rip • ${set.weight} kg • rec ${set.restTimeSeconds}s',
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, size: 20, color: Colors.redAccent),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: () {
-                                  final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
-                                  final newExercise = exercise.copyWith(sets: newSets);
-                                  final newExercises = List<Exercise>.from(exercises);
-                                  newExercises[exIndex] = newExercise;
-                                  _updateItem(WorkoutItem.superset(exercises: newExercises));
-                                },
-                              ),
-                            ],
+                            ),
                           ),
                         );
                       }),
@@ -279,10 +307,11 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
     );
   }
 
-  void _showAddSetBottomSheet(Exercise exercise, {int? supersetExerciseIndex}) {
-    final repsController = TextEditingController();
-    final weightController = TextEditingController();
-    final restController = TextEditingController();
+  void _showAddSetBottomSheet(Exercise exercise, {int? supersetExerciseIndex, int? setIndexToEdit, ExerciseSet? existingSet}) {
+    final isEditing = setIndexToEdit != null && existingSet != null;
+    final repsController = TextEditingController(text: existingSet?.reps.toString() ?? '');
+    final weightController = TextEditingController(text: existingSet?.weight.toString() ?? '');
+    final restController = TextEditingController(text: existingSet?.restTimeSeconds.toString() ?? '');
     
     showModalBottomSheet(
       context: context,
@@ -299,7 +328,7 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Nuova Serie per ${exercise.name}',
+              isEditing ? 'Modifica Serie' : 'Nuova Serie per ${exercise.name}',
               style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
@@ -338,9 +367,14 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                 final reps = int.tryParse(repsController.text) ?? 0;
                 final weight = double.tryParse(weightController.text) ?? 0.0;
                 final rest = int.tryParse(restController.text) ?? 0;
-                
                 final newSet = ExerciseSet(reps: reps, weight: weight, restTimeSeconds: rest);
-                final newSets = List<ExerciseSet>.from(exercise.sets)..add(newSet);
+                final newSets = List<ExerciseSet>.from(exercise.sets);
+                if (isEditing) {
+                  newSets[setIndexToEdit] = newSet;
+                } else {
+                  newSets.add(newSet);
+                }
+                
                 final newExercise = exercise.copyWith(sets: newSets);
                 
                 if (supersetExerciseIndex == null) {
@@ -354,7 +388,7 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                 }
                 Navigator.pop(ctx);
               },
-              child: const Text('Aggiungi Serie'),
+              child: Text(isEditing ? 'Salva Modifiche' : 'Aggiungi Serie'),
             ),
             const SizedBox(height: 24),
           ],
@@ -363,9 +397,10 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
     );
   }
 
-  void _showCreateExerciseBottomSheet() {
-    final nameController = TextEditingController();
-    final descController = TextEditingController();
+  void _showCreateExerciseBottomSheet({Exercise? existingExercise, int? supersetExerciseIndex}) {
+    final isEditing = existingExercise != null && supersetExerciseIndex != null;
+    final nameController = TextEditingController(text: existingExercise?.name ?? '');
+    final descController = TextEditingController(text: existingExercise?.description ?? '');
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -381,7 +416,7 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Nuovo Esercizio in Superserie',
+              isEditing ? 'Modifica Esercizio' : 'Nuovo Esercizio in Superserie',
               style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -399,18 +434,27 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
             ElevatedButton(
               onPressed: () {
                 if (nameController.text.trim().isNotEmpty && _item is SupersetWorkoutItem) {
-                  final exercise = Exercise(
-                    id: const Uuid().v4(),
-                    name: nameController.text.trim(),
-                    description: descController.text.trim(),
-                    sets: [],
-                  );
-                  final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises)..add(exercise);
-                  _updateItem(WorkoutItem.superset(exercises: newExercises));
+                  if (isEditing) {
+                    final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises);
+                    newExercises[supersetExerciseIndex] = existingExercise.copyWith(
+                      name: nameController.text.trim(),
+                      description: descController.text.trim(),
+                    );
+                    _updateItem(WorkoutItem.superset(exercises: newExercises));
+                  } else {
+                    final exercise = Exercise(
+                      id: const Uuid().v4(),
+                      name: nameController.text.trim(),
+                      description: descController.text.trim(),
+                      sets: [],
+                    );
+                    final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises)..add(exercise);
+                    _updateItem(WorkoutItem.superset(exercises: newExercises));
+                  }
                   Navigator.pop(ctx);
                 }
               },
-              child: const Text('Aggiungi'),
+              child: Text(isEditing ? 'Salva Modifiche' : 'Aggiungi'),
             ),
             const SizedBox(height: 24),
           ],

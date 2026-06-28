@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/routes/app_router.dart';
 import 'features/workout/presentation/bloc/workout_cubit.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +20,9 @@ class MyApp extends StatelessWidget {
       create: (_) => di.sl<WorkoutCubit>()..loadPlans(),
       child: MaterialApp.router(
         title: 'Workout Analyzer',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
         routerConfig: appRouter,
       ),
     );

@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../../domain/entities/workout_item.dart';
 import '../../domain/entities/exercise.dart';
 import '../../domain/entities/exercise_set.dart';
+import '../../../../core/presentation/widgets/app_card.dart';
 
 class WorkoutItemDetailPage extends StatefulWidget {
   final WorkoutItem item;
@@ -57,63 +58,142 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
 
   Widget _buildSingleDetail(Exercise exercise) {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 100.0),
       children: [
         if (exercise.description.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Text(exercise.description, style: const TextStyle(fontSize: 16)),
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: Text(
+              exercise.description,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.grey.shade700,
+                  ),
+            ),
           ),
-        const Text('Serie:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Serie',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            TextButton.icon(
+              onPressed: () => _showAddSetBottomSheet(exercise),
+              icon: const Icon(Icons.add),
+              label: const Text('Aggiungi'),
+            ),
+          ],
+        ),
         const SizedBox(height: 8),
+        if (exercise.sets.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Center(
+              child: Text(
+                'Nessuna serie aggiunta.\nClicca "Aggiungi" per iniziare.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey.shade500),
+              ),
+            ),
+          ),
         ...exercise.sets.asMap().entries.map((entry) {
           final setIndex = entry.key;
           final set = entry.value;
-          return Card(
-            child: ListTile(
-              title: Text('Serie ${setIndex + 1}'),
-              subtitle: Text('${set.reps} rip, ${set.weight} kg, rec ${set.restTimeSeconds}s'),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
-                  _updateItem(WorkoutItem.single(exercise: exercise.copyWith(sets: newSets)));
-                },
-              ),
+          return AppCard(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '${setIndex + 1}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildSetStat('${set.reps}', 'Rip'),
+                      _buildSetStat('${set.weight}', 'kg'),
+                      _buildSetStat('${set.restTimeSeconds}s', 'Rec'),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () {
+                    final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
+                    _updateItem(WorkoutItem.single(exercise: exercise.copyWith(sets: newSets)));
+                  },
+                ),
+              ],
             ),
           );
         }),
-        const SizedBox(height: 16),
-        ElevatedButton.icon(
-          onPressed: () => _showAddSetDialog(exercise),
-          icon: const Icon(Icons.add),
-          label: const Text('Aggiungi Serie'),
-        ),
+      ],
+    );
+  }
+
+  Widget _buildSetStat(String value, String label) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
       ],
     );
   }
 
   Widget _buildSupersetDetail(List<Exercise> exercises) {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 100.0),
       children: [
         ...exercises.asMap().entries.map((entry) {
           final exIndex = entry.key;
           final exercise = entry.value;
-          return Card(
-            color: Colors.blue.withOpacity(0.05),
-            margin: const EdgeInsets.only(bottom: 16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+          return AppCard(
+            color: Theme.of(context).colorScheme.surface,
+            margin: const EdgeInsets.only(bottom: 24.0),
+            padding: EdgeInsets.zero,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    border: Border(
+                      bottom: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+                    ),
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(exercise.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: Text(
+                          exercise.name,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        ),
+                      ),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                         onPressed: () {
                           final newExercises = List<Exercise>.from(exercises)..removeAt(exIndex);
                           _updateItem(WorkoutItem.superset(exercises: newExercises));
@@ -121,153 +201,220 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                       ),
                     ],
                   ),
-                  if (exercise.description.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(exercise.description),
-                    ),
-                  ...exercise.sets.asMap().entries.map((setEntry) {
-                    final setIndex = setEntry.key;
-                    final set = setEntry.value;
-                    return ListTile(
-                      dense: true,
-                      title: Text('Serie ${setIndex + 1}'),
-                      subtitle: Text('${set.reps} rip, ${set.weight} kg, rec ${set.restTimeSeconds}s'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
-                          final newExercise = exercise.copyWith(sets: newSets);
-                          final newExercises = List<Exercise>.from(exercises);
-                          newExercises[exIndex] = newExercise;
-                          _updateItem(WorkoutItem.superset(exercises: newExercises));
-                        },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (exercise.description.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            exercise.description,
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ),
+                      ...exercise.sets.asMap().entries.map((setEntry) {
+                        final setIndex = setEntry.key;
+                        final set = setEntry.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 30,
+                                child: Text(
+                                  'S${setIndex + 1}',
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${set.reps} rip • ${set.weight} kg • rec ${set.restTimeSeconds}s',
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, size: 20, color: Colors.redAccent),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
+                                  final newExercise = exercise.copyWith(sets: newSets);
+                                  final newExercises = List<Exercise>.from(exercises);
+                                  newExercises[exIndex] = newExercise;
+                                  _updateItem(WorkoutItem.superset(exercises: newExercises));
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _showAddSetBottomSheet(exercise, supersetExerciseIndex: exIndex),
+                          icon: const Icon(Icons.add, size: 18),
+                          label: const Text('Aggiungi Serie'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Theme.of(context).colorScheme.primary,
+                            side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                          ),
+                        ),
                       ),
-                    );
-                  }),
-                  TextButton.icon(
-                    onPressed: () => _showAddSetDialog(exercise, supersetExerciseIndex: exIndex),
-                    icon: const Icon(Icons.add),
-                    label: const Text('Aggiungi Serie'),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         }),
         ElevatedButton.icon(
-          onPressed: _showCreateExerciseDialog,
+          onPressed: _showCreateExerciseBottomSheet,
           icon: const Icon(Icons.add),
-          label: const Text('Aggiungi Esercizio alla Superserie'),
+          label: const Text('Nuovo Esercizio in Superserie'),
         ),
       ],
     );
   }
 
-  void _showAddSetDialog(Exercise exercise, {int? supersetExerciseIndex}) {
+  void _showAddSetBottomSheet(Exercise exercise, {int? supersetExerciseIndex}) {
     final repsController = TextEditingController();
     final weightController = TextEditingController();
     final restController = TextEditingController();
     
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Nuova Serie'),
-        content: Column(
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 24,
+        ),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: repsController,
-              decoration: const InputDecoration(labelText: 'Ripetizioni'),
-              keyboardType: TextInputType.number,
+            Text(
+              'Nuova Serie per ${exercise.name}',
+              style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            TextField(
-              controller: weightController,
-              decoration: const InputDecoration(labelText: 'Peso (kg)'),
-              keyboardType: TextInputType.number,
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: repsController,
+                    decoration: const InputDecoration(labelText: 'Ripetizioni'),
+                    keyboardType: TextInputType.number,
+                    autofocus: true,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: weightController,
+                    decoration: const InputDecoration(labelText: 'Peso (kg)'),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
             ),
-            TextField(
+            const SizedBox(height: 16),
+            TextFormField(
               controller: restController,
-              decoration: const InputDecoration(labelText: 'Recupero (secondi)'),
+              decoration: const InputDecoration(
+                labelText: 'Recupero (secondi)',
+                hintText: 'es. 90',
+              ),
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                final reps = int.tryParse(repsController.text) ?? 0;
+                final weight = double.tryParse(weightController.text) ?? 0.0;
+                final rest = int.tryParse(restController.text) ?? 0;
+                
+                final newSet = ExerciseSet(reps: reps, weight: weight, restTimeSeconds: rest);
+                final newSets = List<ExerciseSet>.from(exercise.sets)..add(newSet);
+                final newExercise = exercise.copyWith(sets: newSets);
+                
+                if (supersetExerciseIndex == null) {
+                  _updateItem(WorkoutItem.single(exercise: newExercise));
+                } else {
+                  if (_item is SupersetWorkoutItem) {
+                    final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises);
+                    newExercises[supersetExerciseIndex] = newExercise;
+                    _updateItem(WorkoutItem.superset(exercises: newExercises));
+                  }
+                }
+                Navigator.pop(ctx);
+              },
+              child: const Text('Aggiungi Serie'),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annulla'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final reps = int.tryParse(repsController.text) ?? 0;
-              final weight = double.tryParse(weightController.text) ?? 0.0;
-              final rest = int.tryParse(restController.text) ?? 0;
-              
-              final newSet = ExerciseSet(reps: reps, weight: weight, restTimeSeconds: rest);
-              final newSets = List<ExerciseSet>.from(exercise.sets)..add(newSet);
-              final newExercise = exercise.copyWith(sets: newSets);
-              
-              if (supersetExerciseIndex == null) {
-                _updateItem(WorkoutItem.single(exercise: newExercise));
-              } else {
-                if (_item is SupersetWorkoutItem) {
-                  final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises);
-                  newExercises[supersetExerciseIndex] = newExercise;
-                  _updateItem(WorkoutItem.superset(exercises: newExercises));
-                }
-              }
-              Navigator.pop(ctx);
-            },
-            child: const Text('Aggiungi'),
-          ),
-        ],
       ),
     );
   }
 
-  void _showCreateExerciseDialog() {
+  void _showCreateExerciseBottomSheet() {
     final nameController = TextEditingController();
     final descController = TextEditingController();
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Nuovo Esercizio Superserie'),
-        content: Column(
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 24,
+        ),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
+            Text(
+              'Nuovo Esercizio in Superserie',
+              style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
               controller: nameController,
               decoration: const InputDecoration(hintText: 'Nome esercizio'),
+              autofocus: true,
             ),
-            TextField(
+            const SizedBox(height: 16),
+            TextFormField(
               controller: descController,
-              decoration: const InputDecoration(hintText: 'Descrizione (opzionale)'),
+              decoration: const InputDecoration(hintText: 'Note (opzionale)'),
             ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                if (nameController.text.trim().isNotEmpty && _item is SupersetWorkoutItem) {
+                  final exercise = Exercise(
+                    id: const Uuid().v4(),
+                    name: nameController.text.trim(),
+                    description: descController.text.trim(),
+                    sets: [],
+                  );
+                  final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises)..add(exercise);
+                  _updateItem(WorkoutItem.superset(exercises: newExercises));
+                  Navigator.pop(ctx);
+                }
+              },
+              child: const Text('Aggiungi'),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annulla'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (nameController.text.isNotEmpty && _item is SupersetWorkoutItem) {
-                final exercise = Exercise(
-                  id: const Uuid().v4(),
-                  name: nameController.text,
-                  description: descController.text,
-                  sets: [],
-                );
-                final newExercises = List<Exercise>.from((_item as SupersetWorkoutItem).exercises)..add(exercise);
-                _updateItem(WorkoutItem.superset(exercises: newExercises));
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Aggiungi'),
-          ),
-        ],
       ),
     );
   }

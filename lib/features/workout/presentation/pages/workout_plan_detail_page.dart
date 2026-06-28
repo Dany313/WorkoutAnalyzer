@@ -5,6 +5,8 @@ import 'package:uuid/uuid.dart';
 import '../bloc/workout_cubit.dart';
 import '../../domain/entities/workout_plan.dart';
 import '../../domain/entities/workout_session.dart';
+import '../../../../core/presentation/widgets/empty_state_widget.dart';
+import '../../../../core/presentation/widgets/app_card.dart';
 
 class WorkoutPlanDetailPage extends StatefulWidget {
   final WorkoutPlan plan;
@@ -35,14 +37,17 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
     return Scaffold(
       appBar: AppBar(title: Text(_plan.name)),
       body: _plan.sessions.isEmpty
-          ? const Center(child: Text('Nessuna seduta in questo piano.'))
+          ? const EmptyStateWidget(
+              icon: Icons.calendar_month,
+              title: 'Nessuna seduta',
+              message: 'Aggiungi la prima seduta al tuo piano!',
+            )
           : ListView.builder(
+              padding: const EdgeInsets.only(top: 16, bottom: 80),
               itemCount: _plan.sessions.length,
               itemBuilder: (context, index) {
                 final session = _plan.sessions[index];
-                return ListTile(
-                  title: Text(session.name),
-                  subtitle: Text('${session.items.length} esercizi/superserie'),
+                return AppCard(
                   onTap: () {
                     context
                         .push('/session/${session.id}', extra: session)
@@ -60,58 +65,112 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
                       }
                     });
                   },
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      final newSessions =
-                          List<WorkoutSession>.from(_plan.sessions)
-                            ..removeAt(index);
-                      _updatePlan(_plan.copyWith(sessions: newSessions));
-                    },
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.view_day,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              session.name,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${session.items.length} esercizi/superserie',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey.shade600,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                        onPressed: () {
+                          final newSessions =
+                              List<WorkoutSession>.from(_plan.sessions)
+                                ..removeAt(index);
+                          _updatePlan(_plan.copyWith(sessions: newSessions));
+                        },
+                      ),
+                    ],
                   ),
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateSessionDialog(context),
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showCreateSessionBottomSheet(context),
+        icon: const Icon(Icons.add),
+        label: const Text('Nuova Seduta'),
       ),
     );
   }
 
-  void _showCreateSessionDialog(BuildContext context) {
+  void _showCreateSessionBottomSheet(BuildContext context) {
     final controller = TextEditingController();
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Nuova Seduta'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-              hintText: 'Nome seduta (es. Petto-Tricipiti)'),
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 24,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annulla'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                final newSession = WorkoutSession(
-                  id: const Uuid().v4(),
-                  name: controller.text,
-                  items: [],
-                );
-                final newSessions = List<WorkoutSession>.from(_plan.sessions)
-                  ..add(newSession);
-                _updatePlan(_plan.copyWith(sessions: newSessions));
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Aggiungi'),
-          ),
-        ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Nuova Seduta',
+              style: Theme.of(ctx).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Nome seduta',
+                hintText: 'es. Petto e Tricipiti',
+                prefixIcon: Icon(Icons.fitness_center),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                if (controller.text.trim().isNotEmpty) {
+                  final newSession = WorkoutSession(
+                    id: const Uuid().v4(),
+                    name: controller.text.trim(),
+                    items: [],
+                  );
+                  final newSessions = List<WorkoutSession>.from(_plan.sessions)
+                    ..add(newSession);
+                  _updatePlan(_plan.copyWith(sessions: newSessions));
+                  Navigator.pop(ctx);
+                }
+              },
+              child: const Text('Aggiungi Seduta'),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }

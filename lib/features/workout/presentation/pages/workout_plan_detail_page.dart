@@ -7,6 +7,7 @@ import '../../domain/entities/workout_plan.dart';
 import '../../domain/entities/workout_session.dart';
 import '../../../../core/presentation/widgets/empty_state_widget.dart';
 import '../../../../core/presentation/widgets/app_card.dart';
+import '../../../../core/presentation/widgets/confirm_delete_dialog.dart';
 
 class WorkoutPlanDetailPage extends StatefulWidget {
   final WorkoutPlan plan;
@@ -110,11 +111,14 @@ class _WorkoutPlanDetailPageState extends State<WorkoutPlanDetailPage> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                            onPressed: () {
-                              final newSessions =
-                                  List<WorkoutSession>.from(_plan.sessions)
-                                    ..removeAt(index);
-                              _updatePlan(_plan.copyWith(sessions: newSessions));
+                            onPressed: () async {
+                              final confirm = await ConfirmDeleteDialog.show(context);
+                              if (confirm && context.mounted) {
+                                final newSessions =
+                                    List<WorkoutSession>.from(_plan.sessions)
+                                      ..removeAt(index);
+                                _updatePlan(_plan.copyWith(sessions: newSessions));
+                              }
                             },
                           ),
                         ],

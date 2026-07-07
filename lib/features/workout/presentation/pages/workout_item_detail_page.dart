@@ -4,6 +4,7 @@ import '../../domain/entities/workout_item.dart';
 import '../../domain/entities/exercise.dart';
 import '../../domain/entities/exercise_set.dart';
 import '../../../../core/presentation/widgets/app_card.dart';
+import '../../../../core/presentation/widgets/confirm_delete_dialog.dart';
 
 class WorkoutItemDetailPage extends StatefulWidget {
   final WorkoutItem item;
@@ -139,9 +140,12 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      onPressed: () {
-                        final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
-                        _updateItem(WorkoutItem.single(exercise: exercise.copyWith(sets: newSets)));
+                      onPressed: () async {
+                        final confirm = await ConfirmDeleteDialog.show(context);
+                        if (confirm && context.mounted) {
+                          final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
+                          _updateItem(WorkoutItem.single(exercise: exercise.copyWith(sets: newSets)));
+                        }
                       },
                     ),
                   ],
@@ -213,9 +217,12 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            onPressed: () {
-                              final newExercises = List<Exercise>.from(exercises)..removeAt(exIndex);
-                              _updateItem(WorkoutItem.superset(exercises: newExercises));
+                            onPressed: () async {
+                              final confirm = await ConfirmDeleteDialog.show(context);
+                              if (confirm && context.mounted) {
+                                final newExercises = List<Exercise>.from(exercises)..removeAt(exIndex);
+                                _updateItem(WorkoutItem.superset(exercises: newExercises));
+                              }
                             },
                           ),
                         ],
@@ -264,12 +271,15 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                                     icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
-                                    onPressed: () {
-                                      final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
-                                      final newExercise = exercise.copyWith(sets: newSets);
-                                      final newExercises = List<Exercise>.from(exercises);
-                                      newExercises[exIndex] = newExercise;
-                                      _updateItem(WorkoutItem.superset(exercises: newExercises));
+                                    onPressed: () async {
+                                      final confirm = await ConfirmDeleteDialog.show(context);
+                                      if (confirm && context.mounted) {
+                                        final newSets = List<ExerciseSet>.from(exercise.sets)..removeAt(setIndex);
+                                        final newExercise = exercise.copyWith(sets: newSets);
+                                        final newExercises = List<Exercise>.from(exercises);
+                                        newExercises[exIndex] = newExercise;
+                                        _updateItem(WorkoutItem.superset(exercises: newExercises));
+                                      }
                                     },
                                   ),
                                 ],

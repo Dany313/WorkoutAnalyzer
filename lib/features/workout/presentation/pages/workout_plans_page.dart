@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../utils/workout_import_utils.dart';
 import '../../../../core/presentation/widgets/empty_state_widget.dart';
 import '../../../../core/presentation/widgets/app_card.dart';
+import '../../../../core/presentation/widgets/confirm_delete_dialog.dart';
 
 class WorkoutPlansPage extends StatelessWidget {
   const WorkoutPlansPage({super.key});
@@ -96,8 +97,11 @@ class WorkoutPlansPage extends StatelessWidget {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                                  onPressed: () {
-                                    context.read<WorkoutCubit>().deletePlan(plan.id);
+                                  onPressed: () async {
+                                    final confirm = await ConfirmDeleteDialog.show(context);
+                                    if (confirm && context.mounted) {
+                                      context.read<WorkoutCubit>().deletePlan(plan.id);
+                                    }
                                   },
                                 ),
                               ],

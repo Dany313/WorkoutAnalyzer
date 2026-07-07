@@ -6,6 +6,7 @@ import '../../domain/entities/workout_item.dart';
 import '../../domain/entities/exercise.dart';
 import '../../../../core/presentation/widgets/empty_state_widget.dart';
 import '../../../../core/presentation/widgets/app_card.dart';
+import '../../../../core/presentation/widgets/confirm_delete_dialog.dart';
 
 class WorkoutSessionPage extends StatefulWidget {
   final WorkoutSession session;
@@ -151,11 +152,14 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () {
-                    _session = _session.copyWith(
-                      items: List.from(_session.items)..removeAt(itemIndex),
-                    );
-                    _updateSession();
+                  onPressed: () async {
+                    final confirm = await ConfirmDeleteDialog.show(context);
+                    if (confirm && context.mounted) {
+                      _session = _session.copyWith(
+                        items: List.from(_session.items)..removeAt(itemIndex),
+                      );
+                      _updateSession();
+                    }
                   },
                 ),
               ],
@@ -230,11 +234,14 @@ class _WorkoutSessionPageState extends State<WorkoutSessionPage> {
               ),
               IconButton(
                 icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                onPressed: () {
-                  _session = _session.copyWith(
-                    items: List.from(_session.items)..removeAt(itemIndex),
-                  );
-                  _updateSession();
+                onPressed: () async {
+                  final confirm = await ConfirmDeleteDialog.show(context);
+                  if (confirm && context.mounted) {
+                    _session = _session.copyWith(
+                      items: List.from(_session.items)..removeAt(itemIndex),
+                    );
+                    _updateSession();
+                  }
                 },
               ),
             ],

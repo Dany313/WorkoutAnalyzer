@@ -312,6 +312,13 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
     final repsController = TextEditingController(text: existingSet?.reps.toString() ?? '');
     final weightController = TextEditingController(text: existingSet?.weight.toString() ?? '');
     final restController = TextEditingController(text: existingSet?.restTimeSeconds.toString() ?? '');
+
+    if (isEditing) {
+      repsController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: repsController.text.length,
+      );
+    }
     
     showModalBottomSheet(
       context: context,
@@ -340,6 +347,7 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                     decoration: const InputDecoration(labelText: 'Ripetizioni'),
                     keyboardType: TextInputType.number,
                     autofocus: true,
+                    onTap: () => repsController.selection = TextSelection(baseOffset: 0, extentOffset: repsController.text.length),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -348,6 +356,7 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                     controller: weightController,
                     decoration: const InputDecoration(labelText: 'Peso (kg)'),
                     keyboardType: TextInputType.number,
+                    onTap: () => weightController.selection = TextSelection(baseOffset: 0, extentOffset: weightController.text.length),
                   ),
                 ),
               ],
@@ -360,6 +369,7 @@ class _WorkoutItemDetailPageState extends State<WorkoutItemDetailPage> {
                 hintText: 'es. 90',
               ),
               keyboardType: TextInputType.number,
+              onTap: () => restController.selection = TextSelection(baseOffset: 0, extentOffset: restController.text.length),
             ),
             const SizedBox(height: 24),
             ElevatedButton(

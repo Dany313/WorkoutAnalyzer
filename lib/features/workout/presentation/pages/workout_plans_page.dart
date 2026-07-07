@@ -5,6 +5,10 @@ import 'package:uuid/uuid.dart';
 import '../bloc/workout_cubit.dart';
 import '../bloc/workout_state.dart';
 import '../../domain/entities/workout_plan.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import '../../utils/workout_import_utils.dart';
 import '../../../../core/presentation/widgets/empty_state_widget.dart';
 import '../../../../core/presentation/widgets/app_card.dart';
 
@@ -14,7 +18,16 @@ class WorkoutPlansPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('I Miei Piani')),
+      appBar: AppBar(
+        title: const Text('I Miei Piani'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.file_upload),
+            onPressed: () => _showImportDialog(context),
+            tooltip: 'Importa Piano JSON',
+          ),
+        ],
+      ),
       body: BlocBuilder<WorkoutCubit, WorkoutState>(
         builder: (context, state) {
           return state.when(
@@ -160,6 +173,97 @@ class WorkoutPlansPage extends StatelessWidget {
             const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showImportDialog(BuildContext context) {
+    final textController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Importa Piano'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: textController,
+              maxLines: 6,
+              decoration: const InputDecoration(
+                hintText: 'Incolla qui il JSON del piano...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                if (textController.text.trim().isNotEmpty) {
+                  Navigator.pop(ctx);
+                  _processImportedJson(context, textController.text);
+                }
+              },
+              child: const Text('Importa da Testo'),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text('oppure'),
+            ),
+            TextButton.icon(
+              icon: const Icon(Icons.file_upload),
+              label: const Text('Carica da file...'),
+              onPressed: () {
+                Navigator.pop(ctx);
+                _importFromFile(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _importFromFile(BuildContext context) async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json', 'txt'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        final jsonString = await file.readAsString();
+        if (context.mounted) {
+          _processImportedJson(context, jsonString);
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        _showError(context, e.toString());
+      }
+    }
+  }
+
+  void _processImportedJson(BuildContext context, String jsonString) {
+    try {
+      final jsonData = jsonDecode(jsonString);
+      final importedPlan = WorkoutPlan.fromJson(jsonData);
+      final newPlan = clonePlanWithNewIds(importedPlan);
+      
+      context.read<WorkoutCubit>().savePlan(newPlan);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Piano importato con successo!')),
+      );
+    } catch (e) {
+      _showError(context, e.toString());
+    }
+  }
+
+  void _showError(BuildContext context, String error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Errore durante l'importazione: $error"),
+        backgroundColor: Colors.redAccent,
       ),
     );
   }
